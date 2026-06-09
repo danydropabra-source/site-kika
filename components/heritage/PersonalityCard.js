@@ -1,6 +1,8 @@
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-export default function PersonalityCard({ name, dates, photo, bio, href = '#' }) {
+export default function PersonalityCard({ name, dates, photo, bio, slug, href }) {
+  const target = href || (slug ? `/personalidades/${slug}` : null)
   return (
     <div className="heritage-card border border-heritage-gold/20">
       <div className="p-5 md:p-6 flex flex-col sm:flex-row gap-5">
@@ -15,9 +17,11 @@ export default function PersonalityCard({ name, dates, photo, bio, href = '#' })
           <p className="text-sm text-heritage-gray mt-1">{dates}</p>
           <div className="h-px w-12 bg-heritage-gold/60 my-3 mx-auto sm:mx-0" />
           <p className="text-sm text-heritage-gray leading-relaxed">{bio}</p>
-          <a href={href} className="btn-ghost-green mt-5 inline-flex">
-            Ver Biografia Completa <ArrowRight className="w-3.5 h-3.5" />
-          </a>
+          {target ? (
+            <Link href={target} className="btn-ghost-green mt-5 inline-flex">
+              Ver Biografia Completa <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>

@@ -217,6 +217,7 @@ export default function StreetPage() {
           dates={street.personality.dates}
           photo={street.personality.photo}
           bio={street.personality.bio}
+          slug={street.personality.slug}
         />
       </section>
 

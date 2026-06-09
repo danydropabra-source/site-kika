@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { Menu, X, ChevronDown, Globe } from 'lucide-react'
 
 const NAV = [
-  { label: 'Explorar', href: '#explorar' },
-  { label: 'Locais', href: '#locais' },
-  { label: 'Hoje na história', href: '#hoje' },
-  { label: 'Sobre', href: '#sobre' },
-  { label: 'Contactos', href: '#contactos' },
+  { label: 'Explorar', href: '/mapa' },
+  { label: 'Locais', href: '/#locais' },
+  { label: 'Hoje na história', href: '/#hoje' },
+  { label: 'Sobre', href: '/sobre' },
+  { label: 'Contactos', href: '/contactos' },
 ]
 
 const LANGS = ['PT', 'EN', 'ES']
