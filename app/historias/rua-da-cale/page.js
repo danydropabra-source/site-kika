@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Heart, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import { ArrowLeft, Heart, ChevronLeft, ChevronRight, Quote, ArrowRight } from 'lucide-react'
 import Header from '@/components/heritage/Header'
 import Footer from '@/components/heritage/Footer'
 import MobileBottomNav from '@/components/heritage/MobileBottomNav'
@@ -11,6 +11,8 @@ import ExpandableSection from '@/components/heritage/ExpandableSection'
 import PersonalityCard from '@/components/heritage/PersonalityCard'
 import PlaceCard from '@/components/heritage/PlaceCard'
 import ShareRow from '@/components/heritage/ShareRow'
+import MemoryCard from '@/components/heritage/MemoryCard'
+import MemoryForm from '@/components/heritage/MemoryForm'
 import { getStreet } from '@/lib/heritage-data'
 
 export default function StreetPage() {
@@ -142,15 +144,67 @@ export default function StreetPage() {
           )}
 
           {activeTab === 'memorias' && (
-            <div className="grid md:grid-cols-2 gap-5">
-              {street.memories.map((m, i) => (
-                <blockquote key={i} className="heritage-card border border-heritage-gold/20 p-6 relative">
-                  <Quote className="w-7 h-7 text-heritage-gold/40 absolute top-4 right-4" />
-                  <p className="font-serif italic text-heritage-ink/90 leading-relaxed">{m.text}</p>
-                  <div className="gold-divider mt-4 max-w-[60px]" />
-                  <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold mt-3">{m.author}</p>
-                </blockquote>
-              ))}
+            <div className="space-y-12">
+              {/* Intro */}
+              <div className="text-center max-w-2xl mx-auto">
+                <p className="eyebrow mb-3">Memórias da Comunidade</p>
+                <h3 className="font-serif text-3xl md:text-4xl text-heritage-green leading-tight">
+                  As vozes que mantêm esta rua viva.
+                </h3>
+                <div className="gold-divider mt-5 max-w-[120px] mx-auto" />
+                <p className="text-heritage-gray mt-5 leading-relaxed">
+                  Este é um arquivo comunitário aberto. Cada testemunho — uma recordação,
+                  uma fotografia antiga, uma história de família — torna-se parte do
+                  património imaterial deste lugar.
+                </p>
+              </div>
+
+              {/* Form + Grid (2 cols on desktop) */}
+              <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+                <div className="lg:sticky lg:top-44">
+                  <MemoryForm streetSlug={street.slug} />
+                </div>
+
+                <div>
+                  <div className="flex items-baseline justify-between gap-3 mb-5">
+                    <h4 className="font-serif text-2xl text-heritage-green">Memórias Partilhadas</h4>
+                    <span className="text-xs uppercase tracking-[0.18em] text-heritage-gold">
+                      {street.communityMemories?.length || 0} testemunhos
+                    </span>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-5">
+                    {(street.communityMemories || []).map((m) => (
+                      <MemoryCard key={m.id} {...m} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom banner */}
+              <div className="relative overflow-hidden rounded-3xl bg-heritage-green text-heritage-warm">
+                <div className="absolute inset-0 opacity-25">
+                  <img
+                    src="https://images.unsplash.com/photo-1605641532626-5ab1dab56350?crop=entropy&cs=srgb&fm=jpg&q=85&w=1600"
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-heritage-green/75" />
+                </div>
+                <div className="relative px-6 py-10 md:px-12 md:py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6 text-center md:text-left">
+                  <div className="max-w-xl mx-auto md:mx-0">
+                    <Quote className="w-7 h-7 text-heritage-gold/70 mb-3 mx-auto md:mx-0" strokeWidth={1.4} />
+                    <p className="font-serif text-2xl md:text-3xl leading-tight">
+                      Cada memória é um pedaço da nossa história.
+                    </p>
+                    <p className="text-heritage-warm/75 text-sm mt-3 leading-relaxed">
+                      Construímos, juntos, um arquivo vivo que ninguém quer perder.
+                    </p>
+                  </div>
+                  <a href="#" className="btn-gold flex-shrink-0 mx-auto md:mx-0">
+                    Ver todas as memórias <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
             </div>
           )}
         </div>
