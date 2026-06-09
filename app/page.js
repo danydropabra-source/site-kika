@@ -39,9 +39,9 @@ export default function HomePage() {
                 Património, cultura e identidade ao seu alcance.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a href="#locais" className="btn-gold">
+                <Link href="/mapa" className="btn-gold">
                   Explorar Mapa <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
                 <Link href="/historias/rua-da-cale" className="text-heritage-warm text-sm underline-offset-4 hover:underline tracking-wide">
                   Ver exemplo de história →
                 </Link>
