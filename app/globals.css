@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 39 40% 93%;
+    --foreground: 0 0% 12%;
+    --card: 39 50% 99%;
+    --card-foreground: 0 0% 12%;
+    --popover: 39 50% 99%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 172 70% 14%;
+    --primary-foreground: 39 40% 95%;
+    --secondary: 38 53% 47%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 39 30% 88%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 38 53% 47%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 38 25% 80%;
+    --input: 38 25% 80%;
+    --ring: 172 70% 14%;
+    --radius: 0.75rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-heritage-beige text-heritage-ink font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-heritage-ink;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .paper-texture {
+    background-color: #F5EFE4;
+    background-image:
+      radial-gradient(at 20% 20%, rgba(181, 138, 58, 0.04) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(11, 58, 52, 0.03) 0px, transparent 50%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.38 0 0 0 0 0.25 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .gold-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-heritage-gold to-transparent;
+  }
+
+  .gold-divider-solid {
+    @apply h-px bg-heritage-gold/40;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 bg-heritage-gold text-white uppercase tracking-[0.12em] text-xs font-bold px-7 py-3.5 rounded-full transition-all hover:bg-[#9c7530] hover:shadow-heritage-lg active:scale-[0.98];
+  }
+
+  .btn-green {
+    @apply inline-flex items-center justify-center gap-2 bg-heritage-green text-heritage-warm uppercase tracking-[0.12em] text-xs font-bold px-7 py-3.5 rounded-full transition-all hover:bg-heritage-green-dark hover:shadow-heritage-lg active:scale-[0.98];
+  }
+
+  .btn-ghost-green {
+    @apply inline-flex items-center justify-center gap-2 border border-heritage-green text-heritage-green uppercase tracking-[0.12em] text-xs font-bold px-6 py-3 rounded-full transition-all hover:bg-heritage-green hover:text-white;
+  }
+
+  .btn-ghost-gold {
+    @apply inline-flex items-center justify-center gap-2 border border-heritage-gold text-heritage-gold uppercase tracking-[0.12em] text-xs font-bold px-6 py-3 rounded-full transition-all hover:bg-heritage-gold hover:text-white;
+  }
+
+  .eyebrow {
+    @apply uppercase tracking-[0.22em] text-[11px] font-bold text-heritage-gold;
+  }
+
+  .section-title {
+    @apply font-serif text-3xl md:text-4xl text-heritage-green leading-tight;
+  }
+
+  .heritage-card {
+    @apply bg-heritage-warm rounded-2xl shadow-heritage overflow-hidden;
+  }
+}
+
+/* Hide scrollbar for carousels */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
