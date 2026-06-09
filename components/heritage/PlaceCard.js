@@ -1,16 +1,21 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 export default function PlaceCard({ name, description, image, slug, location, compact = false }) {
+  const t = useT()
   return (
     <Link
       href={slug ? `/historias/${slug}` : '#'}
-      className="group heritage-card border border-heritage-gold/15 hover:shadow-heritage-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+      className="group heritage-card border border-heritage-gold/15 hover:shadow-heritage-lg transition-all duration-300 hover:-translate-y-1 flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold focus-visible:ring-offset-2"
+      aria-label={`${name} — ${t('common.saberMais')}`}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image}
-          alt={name}
+          alt={`${name}${location ? ' — ' + location : ''}`}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         {location && (
@@ -24,7 +29,7 @@ export default function PlaceCard({ name, description, image, slug, location, co
         <div className="h-px w-10 bg-heritage-gold/50 my-3" />
         <p className="text-sm text-heritage-gray leading-relaxed flex-1">{description}</p>
         <div className="mt-4 flex items-center gap-2 text-heritage-gold text-[11px] font-bold uppercase tracking-[0.16em]">
-          Saber Mais <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          {t('common.saberMais')} <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
         </div>
       </div>
     </Link>

@@ -9,14 +9,14 @@ import MobileBottomNav from '@/components/heritage/MobileBottomNav'
 import MapPin from '@/components/heritage/MapPin'
 import MapPreviewCard from '@/components/heritage/MapPreviewCard'
 import { featuredPlaces } from '@/lib/heritage-data'
+import { useT } from '@/lib/i18n/I18nProvider'
 
-// Leaflet must be loaded client-side only (window references).
 const HeritageMap = dynamic(() => import('@/components/heritage/HeritageMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center bg-heritage-beige-dark/40">
       <div className="flex flex-col items-center gap-3 text-heritage-green">
-        <Compass className="w-8 h-8 animate-spin" strokeWidth={1.5} />
+        <Compass className="w-8 h-8 animate-spin" strokeWidth={1.5} aria-hidden="true" />
         <p className="text-xs uppercase tracking-[0.22em] text-heritage-gold">A carregar mapa…</p>
       </div>
     </div>
@@ -24,69 +24,54 @@ const HeritageMap = dynamic(() => import('@/components/heritage/HeritageMap'), {
 })
 
 export default function MapPage() {
+  const t = useT()
   const [selected, setSelected] = useState(null)
+  const pilot = featuredPlaces.find((p) => p.pilot)
 
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
       <Header />
 
-      {/* Title */}
       <section className="container pt-10 md:pt-14 pb-6">
-        <p className="eyebrow">Mapa Interactivo</p>
+        <p className="eyebrow">{t('map.eyebrow')}</p>
         <h1 className="font-serif text-4xl md:text-5xl text-heritage-green mt-2 leading-tight tracking-tight">
-          Explora o mapa
+          {t('map.title')}
         </h1>
-        <p className="mt-3 text-heritage-gray text-lg max-w-2xl font-serif italic">
-          Clica nos pontos e descobre as histórias de cada lugar.
-        </p>
+        <p className="mt-3 text-heritage-gray text-lg max-w-2xl font-serif italic">{t('map.subtitle')}</p>
         <div className="gold-divider mt-6 max-w-[140px]" />
       </section>
 
-      {/* Map + sidebar */}
       <section className="container pb-12">
         <div className="grid lg:grid-cols-[1fr_360px] gap-6">
-          {/* Map */}
           <div className="relative h-[60vh] min-h-[420px] lg:h-[640px] rounded-2xl overflow-hidden border border-heritage-gold/25 shadow-heritage">
-            <HeritageMap
-              places={featuredPlaces}
-              selected={selected}
-              onSelect={setSelected}
-            />
+            <HeritageMap places={featuredPlaces} selected={selected} onSelect={setSelected} />
 
-            {/* Legend overlay (top-right) */}
-            <div className="absolute top-3 right-3 z-[500] bg-heritage-warm/95 backdrop-blur border border-heritage-gold/25 rounded-xl px-4 py-3 shadow-heritage hidden sm:block">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-heritage-gold font-bold mb-2">Legenda</p>
+            <div className="absolute top-3 right-3 z-[500] bg-heritage-warm/95 backdrop-blur border border-heritage-gold/25 rounded-xl px-4 py-3 shadow-heritage hidden sm:block" aria-label={t('map.legend')}>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-heritage-gold font-bold mb-2">{t('map.legend')}</p>
               <div className="flex flex-col gap-1.5">
-                <MapPin pilot label="Ponto piloto" />
-                <MapPin label="Local com história" />
+                <MapPin pilot label={t('map.pilotPoint')} />
+                <MapPin label={t('map.placeWithStory')} />
               </div>
             </div>
 
-            {/* Mobile floating card */}
             {selected && (
               <div className="lg:hidden absolute bottom-3 left-3 right-3 z-[500] animate-fade-in">
-                <MapPreviewCard
-                  place={selected}
-                  onClose={() => setSelected(null)}
-                  floating
-                />
+                <MapPreviewCard place={selected} onClose={() => setSelected(null)} floating />
               </div>
             )}
           </div>
 
-          {/* Sidebar list */}
-          <aside className="flex flex-col gap-3">
+          <aside className="flex flex-col gap-3" aria-label={t('map.placesOnMap')}>
             <div className="hidden lg:block">
               {selected ? (
                 <MapPreviewCard place={selected} onClose={() => setSelected(null)} />
               ) : (
                 <div className="heritage-card border border-heritage-gold/25 p-6">
-                  <Compass className="w-6 h-6 text-heritage-gold mb-3" strokeWidth={1.5} />
-                  <h3 className="font-serif text-xl text-heritage-green">Comece a explorar</h3>
+                  <Compass className="w-6 h-6 text-heritage-gold mb-3" strokeWidth={1.5} aria-hidden="true" />
+                  <h3 className="font-serif text-xl text-heritage-green">{t('map.startExploring')}</h3>
                   <div className="h-px w-10 bg-heritage-gold/60 my-3" />
                   <p className="text-sm text-heritage-gray leading-relaxed">
-                    Toque num dos pontos no mapa para conhecer a história do lugar.
-                    O ponto dourado destaca a <strong className="text-heritage-green font-bold">Rua da Cale</strong>, o primeiro local do projecto.
+                    {t('map.startBody')} <strong className="text-heritage-green font-bold">{pilot?.name || 'Rua da Cale'}</strong>{t('map.startBodyAfter')}
                   </p>
                 </div>
               )}
@@ -94,8 +79,8 @@ export default function MapPage() {
 
             <div className="heritage-card border border-heritage-gold/20">
               <div className="px-5 py-4 border-b border-heritage-gold/15">
-                <p className="eyebrow">Locais no mapa</p>
-                <p className="text-xs text-heritage-gray mt-1">{featuredPlaces.length} pontos · Fundão</p>
+                <p className="eyebrow">{t('map.placesOnMap')}</p>
+                <p className="text-xs text-heritage-gray mt-1">{featuredPlaces.length} {t('map.pointsCount')} · Fundão</p>
               </div>
               <ul className="divide-y divide-heritage-gold/10 max-h-[420px] overflow-y-auto">
                 {featuredPlaces.map((p) => {
@@ -104,22 +89,17 @@ export default function MapPage() {
                     <li key={p.slug}>
                       <button
                         onClick={() => setSelected(p)}
-                        className={`w-full text-left px-5 py-3 flex items-center gap-3 transition ${
-                          active ? 'bg-heritage-gold/10' : 'hover:bg-heritage-beige/60'
-                        }`}
+                        aria-pressed={active}
+                        className={`w-full text-left px-5 py-3 flex items-center gap-3 transition min-h-[56px] focus:outline-none focus-visible:bg-heritage-gold/15 ${active ? 'bg-heritage-gold/10' : 'hover:bg-heritage-beige/60'}`}
                       >
                         <span className="flex-shrink-0">
                           <MapPin pilot={p.pilot} />
                         </span>
                         <span className="flex-1 min-w-0">
-                          <span className="block font-serif text-[15px] text-heritage-green truncate leading-tight">
-                            {p.name}
-                          </span>
-                          <span className="block text-[11px] text-heritage-gray-light truncate">
-                            {p.description}
-                          </span>
+                          <span className="block font-serif text-[15px] text-heritage-green truncate leading-tight">{p.name}</span>
+                          <span className="block text-[11px] text-heritage-gray-light truncate">{p.description}</span>
                         </span>
-                        <MapPinIcon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-heritage-gold' : 'text-heritage-gold/40'}`} />
+                        <MapPinIcon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-heritage-gold' : 'text-heritage-gold/40'}`} aria-hidden="true" />
                       </button>
                     </li>
                   )

@@ -1,9 +1,12 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight, Mail, Phone, MapPin, Building2, Landmark, ShieldCheck, Map, Headphones, BookOpen, Users, QrCode, ScanLine, ChevronRight } from 'lucide-react'
 import Header from '@/components/heritage/Header'
 import Footer from '@/components/heritage/Footer'
 import MobileBottomNav from '@/components/heritage/MobileBottomNav'
 import ContactForm from '@/components/heritage/ContactForm'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 const BENEFITS = [
   { icon: ShieldCheck, title: 'Conteúdos rigorosos', text: 'Investigação documentada, fontes verificadas, revisão científica.' },
@@ -84,6 +87,7 @@ function PlaqueMockup() {
 }
 
 export default function ContactosPage() {
+  const t = useT()
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
       <Header />
@@ -93,19 +97,18 @@ export default function ContactosPage() {
         <div className="grid lg:grid-cols-[1fr_400px] gap-10 items-end">
           <div>
             <p className="eyebrow flex items-center gap-2">
-              <Building2 className="w-4 h-4" /> Parcerias · Municípios
+              <Building2 className="w-4 h-4" aria-hidden="true" /> {t('contactos.eyebrow')}
             </p>
             <h1 className="font-serif text-4xl md:text-6xl text-heritage-green mt-3 leading-[1.05] tracking-tight">
-              Trazemos o património da sua vila à vida.
+              {t('contactos.title')}
             </h1>
             <div className="gold-divider mt-5 max-w-[140px]" />
             <p className="text-lg text-heritage-gray font-serif italic max-w-2xl mt-5 leading-relaxed">
-              Um modelo chave-na-mão para Câmaras Municipais, Juntas de Freguesia e
-              associações culturais que querem contar a sua história com rigor e beleza.
+              {t('contactos.body')}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href="#form" className="btn-gold">Fale Connosco <ArrowRight className="w-3.5 h-3.5" /></a>
-              <Link href="/sobre" className="btn-ghost-green">Como funciona</Link>
+              <a href="#form" className="btn-gold">{t('contactos.talkToUs')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" /></a>
+              <Link href="/sobre" className="btn-ghost-green">{t('contactos.howItWorksLink')}</Link>
             </div>
           </div>
           <div className="hidden lg:block">
@@ -117,8 +120,8 @@ export default function ContactosPage() {
       {/* Benefits */}
       <section className="container mt-20 md:mt-28">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="eyebrow mb-3">O que incluímos</p>
-          <h2 className="section-title">Tudo o que precisa, num único parceiro.</h2>
+          <p className="eyebrow mb-3">{t('contactos.benefitsEyebrow')}</p>
+          <h2 className="section-title">{t('contactos.benefitsTitle')}</h2>
           <div className="gold-divider mt-5 max-w-[120px] mx-auto" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -140,8 +143,8 @@ export default function ContactosPage() {
       <section className="container mt-20 md:mt-28">
         <div className="grid lg:grid-cols-[1fr_360px] gap-10">
           <div>
-            <p className="eyebrow mb-3">Como implementamos</p>
-            <h2 className="section-title">Seis passos. Um processo claro.</h2>
+            <p className="eyebrow mb-3">{t('contactos.howEyebrow')}</p>
+            <h2 className="section-title">{t('contactos.howTitle')}</h2>
             <div className="gold-divider mt-5 max-w-[120px]" />
             <ol className="mt-8 space-y-4">
               {STEPS.map((s) => (
@@ -159,11 +162,10 @@ export default function ContactosPage() {
 
           {/* Example plaque (visible on lg+, mobile shows it earlier? Let's show here on small too) */}
           <aside className="lg:sticky lg:top-28 h-fit">
-            <p className="eyebrow mb-3 text-center lg:text-left">Placa de exemplo</p>
+            <p className="eyebrow mb-3 text-center lg:text-left">{t('contactos.plateEyebrow')}</p>
             <PlaqueMockup />
             <p className="text-xs text-heritage-gray-light text-center lg:text-left mt-4 max-w-xs mx-auto lg:mx-0 leading-relaxed italic">
-              Placas discretas em metal envelhecido com QR code, integradas com respeito
-              pela arquitectura local.
+              {t('contactos.plateNote')}
             </p>
           </aside>
         </div>
@@ -178,28 +180,28 @@ export default function ContactosPage() {
 
           <aside className="space-y-5">
             <div className="heritage-card border border-heritage-gold/20 p-6">
-              <p className="eyebrow mb-2">Contacto Directo</p>
-              <h3 className="font-serif text-xl text-heritage-green leading-tight">Equipa de parcerias</h3>
+              <p className="eyebrow mb-2">{t('contactos.directEyebrow')}</p>
+              <h3 className="font-serif text-xl text-heritage-green leading-tight">{t('contactos.directTitle')}</h3>
               <div className="gold-divider my-4 max-w-[60px]" />
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-3 text-heritage-ink/90">
-                  <Mail className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" />
+                  <Mail className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" aria-hidden="true" />
                   <span>parcerias@historiasqueficam.pt</span>
                 </li>
                 <li className="flex items-start gap-3 text-heritage-ink/90">
-                  <Phone className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" />
+                  <Phone className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" aria-hidden="true" />
                   <span>+351 275 000 000</span>
                 </li>
                 <li className="flex items-start gap-3 text-heritage-ink/90">
-                  <MapPin className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" />
+                  <MapPin className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" aria-hidden="true" />
                   <span>Fundão, Portugal<br/><span className="text-heritage-gray-light text-xs">Visitas com marcação prévia</span></span>
                 </li>
               </ul>
             </div>
 
             <div className="heritage-card border border-heritage-gold/20 p-6 bg-heritage-green text-heritage-warm">
-              <Landmark className="w-5 h-5 text-heritage-gold-light mb-3" strokeWidth={1.5} />
-              <h3 className="font-serif text-xl leading-tight">Já colaboramos com</h3>
+              <Landmark className="w-5 h-5 text-heritage-gold-light mb-3" strokeWidth={1.5} aria-hidden="true" />
+              <h3 className="font-serif text-xl leading-tight">{t('contactos.alreadyTitle')}</h3>
               <div className="h-px w-12 bg-heritage-gold my-3" />
               <ul className="text-sm space-y-2 text-heritage-warm/85">
                 <li>· Câmara Municipal do Fundão</li>
@@ -210,13 +212,10 @@ export default function ContactosPage() {
             </div>
 
             <div className="heritage-card border border-heritage-gold/20 p-6">
-              <ScanLine className="w-5 h-5 text-heritage-gold mb-3" strokeWidth={1.5} />
-              <h3 className="font-serif text-xl text-heritage-green leading-tight">Tem uma placa connosco?</h3>
+              <ScanLine className="w-5 h-5 text-heritage-gold mb-3" strokeWidth={1.5} aria-hidden="true" />
+              <h3 className="font-serif text-xl text-heritage-green leading-tight">{t('contactos.plateTitle')}</h3>
               <div className="gold-divider my-3 max-w-[60px]" />
-              <p className="text-sm text-heritage-gray leading-relaxed">
-                Aponte a câmara do telemóvel ao QR code da placa para abrir a história do
-                lugar onde se encontra.
-              </p>
+              <p className="text-sm text-heritage-gray leading-relaxed">{t('contactos.plateBody')}</p>
             </div>
           </aside>
         </div>
