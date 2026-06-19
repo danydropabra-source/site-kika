@@ -15,8 +15,8 @@ export default function Header() {
 
   const NAV = [
     { label: t('nav.explore'), href: '/mapa' },
+    { label: t('nav.routes'), href: '/rotas' },
     { label: t('nav.places'), href: '/#locais' },
-    { label: t('nav.today'), href: '/#hoje' },
     { label: t('nav.about'), href: '/sobre' },
     { label: t('nav.contact'), href: '/contactos' },
   ]
