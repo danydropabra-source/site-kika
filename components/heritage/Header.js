@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X, ChevronDown, Globe } from 'lucide-react'
 import { useI18n, useT } from '@/lib/i18n/I18nProvider'
+import { getNavItems } from '@/lib/nav'
 
 const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES' }
 
@@ -13,13 +14,7 @@ export default function Header() {
   const [open, setOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
 
-  const NAV = [
-    { label: t('nav.explore'), href: '/mapa' },
-    { label: t('nav.routes'), href: '/rotas' },
-    { label: t('nav.places'), href: '/#locais' },
-    { label: t('nav.about'), href: '/sobre' },
-    { label: t('nav.contact'), href: '/contactos' },
-  ]
+  const NAV = getNavItems(t)
 
   return (
     <header className="sticky top-0 z-40 bg-heritage-beige/85 backdrop-blur-md border-b border-heritage-gold/20">
