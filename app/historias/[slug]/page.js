@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { notFound, useParams } from 'next/navigation'
 import { ArrowLeft, Heart, ChevronLeft, ChevronRight, Quote, ArrowRight } from 'lucide-react'
@@ -16,12 +16,14 @@ import MemoryCard from '@/components/heritage/MemoryCard'
 import MemoryForm from '@/components/heritage/MemoryForm'
 import { getStreet } from '@/lib/heritage-data'
 import { useT } from '@/lib/i18n/I18nProvider'
+import { useFavorite } from '@/lib/useFavorites'
 
 export default function StreetPage() {
   const params = useParams()
   const street = getStreet(params?.slug)
   const t = useT()
-  const [saved, setSaved] = useState(false)
+  const { isFav, ready: favReady, toggle: toggleFav } = useFavorite(street?.slug || '')
+  const [pulse, setPulse] = useState(false)
   const [activeTab, setActiveTab] = useState('historia')
   const [galleryIdx, setGalleryIdx] = useState(0)
   const tabsRef = useRef([])
@@ -60,12 +62,16 @@ export default function StreetPage() {
             <span>{t('common.backToMap')}</span>
           </Link>
           <button
-            onClick={() => setSaved(!saved)}
-            aria-label={t('common.save')}
-            aria-pressed={saved}
-            className={`w-11 h-11 rounded-full border flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold ${saved ? 'bg-heritage-gold border-heritage-gold text-white' : 'border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold/10'}`}
+            onClick={async () => {
+              await toggleFav()
+              setPulse(true)
+              setTimeout(() => setPulse(false), 350)
+            }}
+            aria-label={isFav ? t('favorites.remove') : t('favorites.add')}
+            aria-pressed={isFav}
+            className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold ${pulse ? 'scale-125' : 'scale-100'} ${favReady && isFav ? 'bg-heritage-gold border-heritage-gold text-white' : 'border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold/10'}`}
           >
-            <Heart className="w-4 h-4" fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
+            <Heart className={`w-4 h-4 transition-transform ${pulse ? 'scale-110' : ''}`} fill={favReady && isFav ? 'currentColor' : 'none'} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </div>
       </div>
