@@ -27,6 +27,29 @@ export interface RouteStop {
   note?: string
 }
 
+// -------- Street content blocks (editorial template) --------
+
+export interface ThemedSection {
+  title: string
+  body: string
+  image?: string
+}
+
+export interface HeritageHighlight {
+  name: string
+  subtitle?: string
+  text: string
+  image: string
+}
+
+export interface BeforeAfter {
+  before: string
+  after: string
+  caption: string
+  year_before?: string
+  year_after?: string
+}
+
 export interface Route {
   id: UUID
   slug: string

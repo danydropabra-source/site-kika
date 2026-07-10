@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Menu, X, ChevronDown, Globe } from 'lucide-react'
 import { useI18n, useT } from '@/lib/i18n/I18nProvider'
 import { getNavItems } from '@/lib/nav'
+import Logo from './Logo'
 
 const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES' }
 
@@ -19,9 +20,18 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 bg-heritage-beige/85 backdrop-blur-md border-b border-heritage-gold/20">
       <div className="container flex items-center justify-between h-16 md:h-20">
-        <Link href="/" className="flex flex-col leading-none group focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded" aria-label="Histórias que Ficam — início">
-          <span className="font-serif text-lg md:text-xl text-heritage-green tracking-tight">Histórias que Ficam</span>
-          <span className="hidden sm:block text-[10px] tracking-[0.22em] uppercase text-heritage-gold mt-0.5">Património · Cultura · Experiência</span>
+        <Link
+          href="/"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded"
+          aria-label="Histórias que Ficam — início"
+        >
+          {/* Mark visible from sm+, full lockup on md+ */}
+          <span className="hidden md:inline-flex">
+            <Logo variant="full" size={44} tone="green" />
+          </span>
+          <span className="inline-flex md:hidden">
+            <Logo variant="full" size={36} showTagline={false} tone="green" />
+          </span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8" aria-label="Principal">
