@@ -22,15 +22,18 @@ export default function Header() {
       <div className="container flex items-center justify-between h-16 md:h-20">
         <Link
           href="/"
-          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded -my-2"
           aria-label="Histórias que Ficam — início"
         >
-          {/* Mark visible from sm+, full lockup on md+ */}
+          {/* Mark visible from sm+, full lockup on md+.
+              markSize is ~2x the wordmark size to give the emblem more presence;
+              negative vertical margin (-my-2) lets it extend slightly beyond
+              the header without forcing the header to grow. */}
           <span className="hidden md:inline-flex">
-            <Logo variant="full" size={44} tone="green" />
+            <Logo variant="full" size={44} markSize={76} tone="green" />
           </span>
           <span className="inline-flex md:hidden">
-            <Logo variant="full" size={36} showTagline={false} tone="green" />
+            <Logo variant="full" size={36} markSize={60} showTagline={false} tone="green" />
           </span>
         </Link>
 

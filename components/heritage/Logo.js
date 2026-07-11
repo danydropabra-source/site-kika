@@ -15,14 +15,15 @@ import Image from 'next/image'
  */
 export default function Logo({
   variant = 'full',
-  size = 40,           // height of the mark in px (wordmark scales relative)
+  size = 40,           // height of the wordmark reference (fontSize scales from this)
+  markSize,            // optional: override the mark height independently of the wordmark
   showTagline = true,  // whether to render the small "Património · Cultura · Experiência" line
   tone = 'green',      // 'green' (default) or 'warm' (for dark backgrounds like the footer)
   className = '',
 }) {
-  const markHeight = size
+  const markHeight = markSize ?? size
   // Emblem aspect ratio is ~2:3 (pin taller than wide).
-  const markWidth = Math.round(size * 0.72)
+  const markWidth = Math.round(markHeight * 0.72)
 
   const isWarm = tone === 'warm'
 
@@ -38,7 +39,7 @@ export default function Logo({
         fill
         sizes={`${markWidth}px`}
         className="object-contain"
-        priority={size >= 56}
+        priority={markHeight >= 56}
       />
     </span>
   )
