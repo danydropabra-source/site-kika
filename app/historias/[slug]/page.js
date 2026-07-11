@@ -193,130 +193,138 @@ export default function StreetPage() {
       </section>
       )}
 
-      {/* ============================= CONTENT MASONRY ============================= */}
+      {/* ============================= CONTENT BLOCKS =============================
+          Fixed 2-column grid (single template for every street).
+          Each block has a canonical column & order; removing a block
+          NEVER re-flows the others between columns.
+          ============================================================= */}
       <section className="container mt-14 md:mt-20">
-        {/* CSS multi-column masonry — respects card heights naturally,
-            collapses to single column on mobile. */}
-        <div className="columns-1 md:columns-2 gap-6 space-y-6 [&>*]:break-inside-avoid [&>*]:mb-6">
-          {/* Main history */}
-          {mainHistoryText && (
-            <CardShell id="historia" icon={BookOpen} eyebrow={hero.category} title={`A ${hero.title}`}>
-              {street.main_history_image && (
-                <div className="rounded-xl overflow-hidden mb-5">
-                  <img src={street.main_history_image} alt={`${hero.title} — fotografia histórica`} className="w-full h-auto object-cover sepia-[0.12]" />
-                </div>
-              )}
-              <div className="space-y-4">
-                {(street.paragraphs || []).map((p, i) => <p key={i}>{p}</p>)}
-              </div>
-            </CardShell>
-          )}
-
-          {/* Name origin */}
-          {street.name_origin && (
-            <CardShell icon={Sparkles} eyebrow="Porquê este nome?" title={`Porque se chama ${hero.title}?`} tone="muted">
-              <p>{street.name_origin}</p>
-            </CardShell>
-          )}
-
-          {/* Themed sections */}
-          {themedSections.map((s, i) => (
-            <CardShell key={i} icon={Hammer} eyebrow="Vida na rua" title={s.title}>
-              {s.image && (
-                <div className="rounded-xl overflow-hidden mb-4">
-                  <img src={s.image} alt={s.title} className="w-full h-auto object-cover sepia-[0.1]" />
-                </div>
-              )}
-              <p>{s.body}</p>
-            </CardShell>
-          ))}
-
-          {/* Heritage highlight */}
-          {heritage && (
-            <CardShell icon={Landmark} eyebrow="Património em Destaque" title={heritage.name}>
-              {heritage.subtitle && (
-                <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold font-bold -mt-3 mb-4">
-                  {heritage.subtitle}
-                </p>
-              )}
-              {heritage.image && (
-                <div className="rounded-xl overflow-hidden mb-4">
-                  <img src={heritage.image} alt={heritage.name} className="w-full h-auto object-cover" />
-                </div>
-              )}
-              <p>{heritage.text}</p>
-            </CardShell>
-          )}
-
-          {/* Personality */}
-          {personality && (
-            <CardShell icon={User} eyebrow="Figura em Destaque" title={personality.name}>
-              <div className="flex items-start gap-4">
-                <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-2 ring-heritage-gold/30 ring-offset-2 ring-offset-heritage-warm flex-shrink-0">
-                  <img src={personality.photo} alt={personality.name} className="w-full h-full object-cover sepia-[0.18]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs uppercase tracking-[0.16em] text-heritage-gold font-bold mb-2">{personality.dates}</p>
-                  <p className="text-[15px] leading-[1.75] text-heritage-gray">{personality.bio}</p>
-                </div>
-              </div>
-              {personality.slug && (
-                <Link href={`/personalidades/${personality.slug}`} className="btn-ghost-green mt-5 inline-flex">
-                  {t('street.viewFullBio')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                </Link>
-              )}
-            </CardShell>
-          )}
-
-          {/* Featured memory */}
-          {featuredMemory && (
-            <CardShell icon={MessageCircle} eyebrow={t('memories.eyebrow')} title="Memórias da Comunidade" tone="accent">
-              <Quote className="w-7 h-7 text-heritage-gold/40 -mt-1 mb-3" strokeWidth={1.4} aria-hidden="true" />
-              {featuredMemory.photo && (
-                <div className="rounded-xl overflow-hidden mb-4 aspect-[16/10]">
-                  <img src={featuredMemory.photo} alt={featuredMemory.name} className="w-full h-full object-cover sepia-[0.15]" />
-                </div>
-              )}
-              <blockquote className="font-serif italic text-heritage-ink/90 leading-[1.75] text-[16px]">
-                {featuredMemory.text}
-              </blockquote>
-              <div className="h-px w-12 bg-heritage-gold/60 mt-5" />
-              <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold font-bold mt-3">
-                {featuredMemory.name}{featuredMemory.age ? `, ${featuredMemory.age}` : ''}
-                {featuredMemory.ligacao && ` · ${featuredMemory.ligacao}`}
-              </p>
-              <a href="#memorias" className="btn-ghost-gold mt-5 inline-flex">
-                Ver mais memórias <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-              </a>
-            </CardShell>
-          )}
-
-          {/* Gallery card (preserves the tab-gallery functionality) */}
-          {gallery.length > 0 && (
-            <CardShell icon={Sparkles} eyebrow={t('street.tabGallery')} title="Fotografia da rua">
-              <div className="grid grid-cols-2 gap-2">
-                {gallery.slice(0, 4).map((g, i) => (
-                  <div key={i} className="rounded-lg overflow-hidden aspect-[4/3]">
-                    <img src={g} alt={`Galeria ${i+1}`} className="w-full h-full object-cover sepia-[0.12] hover:sepia-0 transition-all duration-500" />
+        <div className="grid md:grid-cols-2 gap-6 items-start">
+          {/* --------- LEFT COLUMN (canonical order) --------- */}
+          <div className="space-y-6">
+            {/* 1. A [street] — main history */}
+            {mainHistoryText && (
+              <CardShell id="historia" icon={BookOpen} eyebrow={hero.category} title={`A ${hero.title}`}>
+                {street.main_history_image && (
+                  <div className="rounded-xl overflow-hidden mb-5">
+                    <img src={street.main_history_image} alt={`${hero.title} — fotografia histórica`} className="w-full h-auto object-cover sepia-[0.12]" />
                   </div>
-                ))}
-              </div>
-            </CardShell>
-          )}
+                )}
+                <div className="space-y-4">
+                  {(street.paragraphs || []).map((p, i) => <p key={i}>{p}</p>)}
+                </div>
+              </CardShell>
+            )}
 
-          {/* Curiosities card (preserves the tab-curiosities functionality) */}
-          {curiosities.length > 0 && (
-            <CardShell icon={Sparkles} eyebrow="Curiosidades" title="Sabia que…" tone="muted">
-              <ul className="space-y-4">
-                {curiosities.map((c, i) => (
-                  <li key={i} className="flex gap-3 items-start">
-                    <span aria-hidden="true" className="flex-shrink-0 w-7 h-7 rounded-full bg-heritage-gold/15 text-heritage-gold font-serif font-bold flex items-center justify-center text-[13px]">{i+1}</span>
-                    <p className="text-[15px] leading-[1.7]">{c}</p>
-                  </li>
-                ))}
-              </ul>
-            </CardShell>
-          )}
+            {/* 3. Themed narrative section(s) */}
+            {themedSections.map((s, i) => (
+              <CardShell key={`themed-${i}`} icon={Hammer} eyebrow="Vida na rua" title={s.title}>
+                {s.image && (
+                  <div className="rounded-xl overflow-hidden mb-4">
+                    <img src={s.image} alt={s.title} className="w-full h-auto object-cover sepia-[0.1]" />
+                  </div>
+                )}
+                <p>{s.body}</p>
+              </CardShell>
+            ))}
+
+            {/* 5. Figura em Destaque */}
+            {personality && (
+              <CardShell icon={User} eyebrow="Figura em Destaque" title={personality.name}>
+                <div className="flex items-start gap-4">
+                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-2 ring-heritage-gold/30 ring-offset-2 ring-offset-heritage-warm flex-shrink-0">
+                    <img src={personality.photo} alt={personality.name} className="w-full h-full object-cover sepia-[0.18]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs uppercase tracking-[0.16em] text-heritage-gold font-bold mb-2">{personality.dates}</p>
+                    <p className="text-[15px] leading-[1.75] text-heritage-gray">{personality.bio}</p>
+                  </div>
+                </div>
+                {personality.slug && (
+                  <Link href={`/personalidades/${personality.slug}`} className="btn-ghost-green mt-5 inline-flex">
+                    {t('street.viewFullBio')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  </Link>
+                )}
+              </CardShell>
+            )}
+
+            {/* 7. Galeria */}
+            {gallery.length > 0 && (
+              <CardShell icon={Sparkles} eyebrow={t('street.tabGallery')} title="Fotografia da rua">
+                <div className="grid grid-cols-2 gap-2">
+                  {gallery.slice(0, 4).map((g, i) => (
+                    <div key={i} className="rounded-lg overflow-hidden aspect-[4/3]">
+                      <img src={g} alt={`Galeria ${i+1}`} className="w-full h-full object-cover sepia-[0.12] hover:sepia-0 transition-all duration-500" />
+                    </div>
+                  ))}
+                </div>
+              </CardShell>
+            )}
+          </div>
+
+          {/* --------- RIGHT COLUMN (canonical order) --------- */}
+          <div className="space-y-6">
+            {/* 2. Porque se chama…? */}
+            {street.name_origin && (
+              <CardShell icon={Sparkles} eyebrow="Porquê este nome?" title={`Porque se chama ${hero.title}?`} tone="muted">
+                <p>{street.name_origin}</p>
+              </CardShell>
+            )}
+
+            {/* 4. Património em Destaque */}
+            {heritage && (
+              <CardShell icon={Landmark} eyebrow="Património em Destaque" title={heritage.name}>
+                {heritage.subtitle && (
+                  <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold font-bold -mt-3 mb-4">
+                    {heritage.subtitle}
+                  </p>
+                )}
+                {heritage.image && (
+                  <div className="rounded-xl overflow-hidden mb-4">
+                    <img src={heritage.image} alt={heritage.name} className="w-full h-auto object-cover" />
+                  </div>
+                )}
+                <p>{heritage.text}</p>
+              </CardShell>
+            )}
+
+            {/* 6. Memórias da Comunidade — featured */}
+            {featuredMemory && (
+              <CardShell icon={MessageCircle} eyebrow={t('memories.eyebrow')} title="Memórias da Comunidade" tone="accent">
+                <Quote className="w-7 h-7 text-heritage-gold/40 -mt-1 mb-3" strokeWidth={1.4} aria-hidden="true" />
+                {featuredMemory.photo && (
+                  <div className="rounded-xl overflow-hidden mb-4 aspect-[16/10]">
+                    <img src={featuredMemory.photo} alt={featuredMemory.name} className="w-full h-full object-cover sepia-[0.15]" />
+                  </div>
+                )}
+                <blockquote className="font-serif italic text-heritage-ink/90 leading-[1.75] text-[16px]">
+                  {featuredMemory.text}
+                </blockquote>
+                <div className="h-px w-12 bg-heritage-gold/60 mt-5" />
+                <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold font-bold mt-3">
+                  {featuredMemory.name}{featuredMemory.age ? `, ${featuredMemory.age}` : ''}
+                  {featuredMemory.ligacao && ` · ${featuredMemory.ligacao}`}
+                </p>
+                <a href="#memorias" className="btn-ghost-gold mt-5 inline-flex">
+                  Ver mais memórias <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                </a>
+              </CardShell>
+            )}
+
+            {/* 8. Curiosidades */}
+            {curiosities.length > 0 && (
+              <CardShell icon={Sparkles} eyebrow="Curiosidades" title="Sabia que…" tone="muted">
+                <ul className="space-y-4">
+                  {curiosities.map((c, i) => (
+                    <li key={i} className="flex gap-3 items-start">
+                      <span aria-hidden="true" className="flex-shrink-0 w-7 h-7 rounded-full bg-heritage-gold/15 text-heritage-gold font-serif font-bold flex items-center justify-center text-[13px]">{i+1}</span>
+                      <p className="text-[15px] leading-[1.7]">{c}</p>
+                    </li>
+                  ))}
+                </ul>
+              </CardShell>
+            )}
+          </div>
         </div>
       </section>
 
