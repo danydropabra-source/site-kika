@@ -152,7 +152,8 @@ export default function StreetPage() {
       </section>
 
       {/* ============================= AUDIO BLOCK ============================= */}
-      <section className="container -mt-8 md:-mt-14 relative z-10">
+      {street.audio?.src && (
+        <section className="container -mt-8 md:-mt-14 relative z-10">
         <div className="grid lg:grid-cols-[1fr_320px] gap-4 md:gap-6 items-stretch">
           {/* Main audio card */}
           <div className="heritage-card border border-heritage-gold/25 shadow-heritage-lg p-5 md:p-7">
@@ -190,6 +191,7 @@ export default function StreetPage() {
           </aside>
         </div>
       </section>
+      )}
 
       {/* ============================= CONTENT MASONRY ============================= */}
       <section className="container mt-14 md:mt-20">
