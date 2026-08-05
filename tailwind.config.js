@@ -32,6 +32,7 @@ module.exports = {
             beige: '#F5EFE4',
             'beige-dark': '#EBE2CF',
             warm: '#FFFDF8',
+            cream: '#FAF7EB',
             ink: '#1E1E1E',
             gray: '#4A4A4A',
             'gray-light': '#8A8A8A',

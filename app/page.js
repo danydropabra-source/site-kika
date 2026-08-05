@@ -105,7 +105,7 @@ export default function HomePage() {
             <div className="relative grid md:grid-cols-2 gap-8 items-center p-8 md:p-14">
               <div>
                 <p className="text-heritage-gold-light uppercase tracking-[0.22em] text-xs mb-4">{t('home.listenEyebrow')}</p>
-                <h2 className="font-serif text-3xl md:text-5xl leading-tight">{t('home.listenTitle')}</h2>
+                <h2 className="font-serif text-3xl md:text-5xl leading-tight text-heritage-cream">{t('home.listenTitle')}</h2>
                 <p className="mt-5 text-heritage-warm/80 max-w-md leading-relaxed">{t('home.listenBody')}</p>
                 <Link href="/historias/rua-da-cale-fundao" className="mt-7 inline-flex btn-gold">
                   <Play className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true" /> {t('home.listenCta')}

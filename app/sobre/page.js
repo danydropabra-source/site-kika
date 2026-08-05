@@ -109,7 +109,7 @@ export default function SobrePage() {
               <p className="text-heritage-gold-light uppercase tracking-[0.22em] text-xs mb-4 flex items-center gap-2">
                 <Building2 className="w-4 h-4" aria-hidden="true" /> {t('sobre.municipalitiesEyebrow')}
               </p>
-              <h2 className="font-serif text-3xl md:text-5xl leading-tight">{t('sobre.municipalitiesTitle')}</h2>
+              <h2 className="font-serif text-3xl md:text-5xl leading-tight text-heritage-cream">{t('sobre.municipalitiesTitle')}</h2>
               <p className="mt-5 text-heritage-warm/85 max-w-md leading-relaxed">{t('sobre.municipalitiesBody')}</p>
               <Link href="/contactos" className="btn-gold mt-7 inline-flex">
                 {t('common.talkToTeam')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
