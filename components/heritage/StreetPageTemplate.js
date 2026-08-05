@@ -156,8 +156,7 @@ export default function StreetPageTemplate({ street }) {
       {/* ============================= AUDIO BLOCK ============================= */}
       {street.audio?.src && (
         <section className="container -mt-8 md:-mt-14 relative z-10">
-        <div className="grid lg:grid-cols-[1fr_320px] gap-4 md:gap-6 items-stretch">
-          {/* Main audio card */}
+          {/* Full-width audio-guide card */}
           <div className="heritage-card border border-heritage-gold/25 shadow-heritage-lg p-5 md:p-7">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-9 h-9 rounded-full bg-heritage-gold/15 border border-heritage-gold/40 text-heritage-gold flex items-center justify-center flex-shrink-0">
@@ -175,24 +174,7 @@ export default function StreetPageTemplate({ street }) {
             </p>
             <AudioPlayer title={street.audio.title} src={street.audio.src} duration={street.audio.duration} />
           </div>
-
-          {/* Prefer to read? side card */}
-          <aside className="heritage-card border border-heritage-gold/25 bg-heritage-beige-dark/30 p-5 md:p-6 flex flex-col justify-between">
-            <div>
-              <span className="w-9 h-9 rounded-full bg-heritage-green/10 border border-heritage-green/30 text-heritage-green flex items-center justify-center mb-3">
-                <Type className="w-4 h-4" strokeWidth={1.6} aria-hidden="true" />
-              </span>
-              <h3 className="font-serif text-xl text-heritage-green leading-tight">Prefere ler?</h3>
-              <p className="text-sm text-heritage-gray leading-relaxed mt-2">
-                Salte para o texto completo desta rua.
-              </p>
-            </div>
-            <a href="#historia" className="btn-ghost-green mt-4 inline-flex justify-center">
-              <BookOpen className="w-3.5 h-3.5" aria-hidden="true" /> Ler texto
-            </a>
-          </aside>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* ============================= CONTENT BLOCKS =============================
