@@ -19,21 +19,19 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-heritage-beige/85 backdrop-blur-md border-b border-heritage-gold/20">
-      <div className="container flex items-center justify-between h-16 md:h-20">
+      <div className="container flex items-center justify-between h-20 md:h-24">
         <Link
           href="/"
           className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded -my-2"
           aria-label="Histórias que Ficam — início"
         >
-          {/* Mark visible from sm+, full lockup on md+.
-              markSize is ~2x the wordmark size to give the emblem more presence;
-              negative vertical margin (-my-2) lets it extend slightly beyond
-              the header without forcing the header to grow. */}
+          {/* Whole lockup scaled ~25% larger vs previous (44/76 → 55/95, 36/60 → 45/75).
+              Emblem and wordmark scale together, preserving proportions. */}
           <span className="hidden md:inline-flex">
-            <Logo variant="full" size={44} markSize={76} tone="green" />
+            <Logo variant="full" size={55} markSize={95} tone="green" />
           </span>
           <span className="inline-flex md:hidden">
-            <Logo variant="full" size={36} markSize={60} showTagline={false} tone="green" />
+            <Logo variant="full" size={45} markSize={75} showTagline={false} tone="green" />
           </span>
         </Link>
 
