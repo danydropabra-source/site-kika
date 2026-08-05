@@ -19,19 +19,19 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-heritage-beige/85 backdrop-blur-md border-b border-heritage-gold/20">
-      <div className="container flex items-center justify-between h-20 md:h-24">
+      <div className="container flex items-center justify-between h-24 md:h-28">
         <Link
           href="/"
           className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded -my-2"
           aria-label="Histórias que Ficam — início"
         >
-          {/* Whole lockup scaled ~25% larger vs previous (44/76 → 55/95, 36/60 → 45/75).
+          {/* Whole lockup scaled another 25% larger (55/95 → 69/119, 45/75 → 56/94).
               Emblem and wordmark scale together, preserving proportions. */}
           <span className="hidden md:inline-flex">
-            <Logo variant="full" size={55} markSize={95} tone="green" />
+            <Logo variant="full" size={69} markSize={119} tone="green" />
           </span>
           <span className="inline-flex md:hidden">
-            <Logo variant="full" size={45} markSize={75} showTagline={false} tone="green" />
+            <Logo variant="full" size={56} markSize={94} showTagline={false} tone="green" />
           </span>
         </Link>
 
