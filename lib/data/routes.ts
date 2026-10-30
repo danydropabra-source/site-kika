@@ -19,7 +19,7 @@ export const routes: Route[] = [
     image:
       'https://images.unsplash.com/photo-1606215767711-263080a6b4b9?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
     stop_count: 4,
-    street_ids: ['castelo-do-fundao', 'rua-da-cale-fundao', 'praca-velha', 'igreja-matriz'],
+    street_ids: ['casa-dos-trigueiros-de-aragao', 'rua-da-cale-fundao', 'praca-velha', 'igreja-matriz'],
     theme: 'Histórico',
     duration_min: 75,
     distance_km: 1.8,
@@ -51,7 +51,7 @@ export const routes: Route[] = [
     image:
       'https://images.unsplash.com/photo-1501927023255-9063be98970c?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
     stop_count: 3,
-    street_ids: ['rua-da-cale-fundao', 'praca-velha', 'castelo-do-fundao'],
+    street_ids: ['rua-da-cale-fundao', 'praca-velha', 'casa-dos-trigueiros-de-aragao'],
     theme: 'Natural',
     duration_min: 60,
     distance_km: 2.1,

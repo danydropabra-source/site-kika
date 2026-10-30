@@ -1,12 +1,25 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowUpRight, Heart } from 'lucide-react'
 import { useState } from 'react'
 import { useT } from '@/lib/i18n/I18nProvider'
 import { useFavorite } from '@/lib/useFavorites'
 
-export default function PlaceCard({ name, description, image, slug, location, compact = false, showFavorite = true }) {
+export default function PlaceCard({
+  name,
+  description,
+  image,
+  // Which part of the photo stays visible once it is cropped to the card.
+  // '50% 50%' is the middle; a bigger second number shows more of the bottom.
+  // Set per place via `imageFocus` in heritage-data.js.
+  imageFocus = '50% 50%',
+  slug,
+  location,
+  compact = false,
+  showFavorite = true,
+}) {
   const t = useT()
   const { isFav, ready, toggle } = useFavorite(slug)
   const [pulse, setPulse] = useState(false)
@@ -26,10 +39,15 @@ export default function PlaceCard({ name, description, image, slug, location, co
       aria-label={`${name} — ${t('common.saberMais')}`}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={`${name}${location ? ' — ' + location : ''}`}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          // Inline style, not a Tailwind class: the value comes from the data
+          // and Tailwind can only generate classes it can see in the source.
+          style={{ objectPosition: imageFocus }}
         />
         {location && (
           <span className="absolute top-3 left-3 bg-heritage-warm/95 backdrop-blur text-[10px] tracking-[0.18em] uppercase text-heritage-green px-2.5 py-1 rounded-full">

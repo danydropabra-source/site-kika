@@ -7,7 +7,7 @@ import { useI18n, useT } from '@/lib/i18n/I18nProvider'
 import { getNavItems } from '@/lib/nav'
 import Logo from './Logo'
 
-const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES' }
+const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR' }
 
 export default function Header() {
   const t = useT()
@@ -23,7 +23,7 @@ export default function Header() {
         <Link
           href="/"
           className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded -my-2"
-          aria-label="Histórias que Ficam — início"
+          aria-label={t('common.homeAriaLabel')}
         >
           {/* Whole lockup scaled another 25% larger (55/95 → 69/119, 45/75 → 56/94).
               Emblem and wordmark scale together, preserving proportions. */}

@@ -19,7 +19,6 @@ export default function Footer() {
           <ul className="space-y-2.5 text-sm">
             <li><a className="text-heritage-warm/80 hover:text-heritage-gold focus:outline-none focus-visible:underline focus-visible:text-heritage-gold" href="/mapa">{t('footer.mapOfPlaces')}</a></li>
             <li><a className="text-heritage-warm/80 hover:text-heritage-gold focus:outline-none focus-visible:underline focus-visible:text-heritage-gold" href="/rotas">{t('footer.themedRoutes')}</a></li>
-            <li><a className="text-heritage-warm/80 hover:text-heritage-gold focus:outline-none focus-visible:underline focus-visible:text-heritage-gold" href="/#hoje">{t('footer.todayInHistory')}</a></li>
             <li><a className="text-heritage-warm/80 hover:text-heritage-gold focus:outline-none focus-visible:underline focus-visible:text-heritage-gold" href="/personalidades/jose-alves-monteiro">{t('footer.personalities')}</a></li>
           </ul>
         </div>

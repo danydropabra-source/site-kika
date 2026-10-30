@@ -10,11 +10,12 @@
 'use client'
 
 import { notFound, useParams } from 'next/navigation'
-import { getStreet } from '@/lib/heritage-data'
+import { useContent } from '@/lib/content'
 import StreetPageTemplate from '@/components/heritage/StreetPageTemplate'
 
 export default function StreetRoute() {
   const params = useParams()
+  const { getStreet } = useContent()
   const street = getStreet(params?.slug)
   if (!street) return notFound()
   return <StreetPageTemplate street={street} />

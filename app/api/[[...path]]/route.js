@@ -1,6 +1,11 @@
 import { MongoClient } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const StatusSchema = z.object({
+  client_name: z.string().min(1, 'client_name não pode estar vazio').max(100, 'client_name demasiado longo'),
+})
 
 // MongoDB connection
 let client
@@ -50,17 +55,18 @@ async function handleRoute(request, { params }) {
     // Status endpoints - POST /api/status
     if (route === '/status' && method === 'POST') {
       const body = await request.json()
-      
-      if (!body.client_name) {
+
+      const parsed = StatusSchema.safeParse(body)
+      if (!parsed.success) {
         return handleCORS(NextResponse.json(
-          { error: "client_name is required" }, 
+          { error: parsed.error.errors[0].message },
           { status: 400 }
         ))
       }
 
       const statusObj = {
         id: uuidv4(),
-        client_name: body.client_name,
+        client_name: parsed.data.client_name,
         timestamp: new Date()
       }
 
@@ -72,7 +78,7 @@ async function handleRoute(request, { params }) {
     if (route === '/status' && method === 'GET') {
       const statusChecks = await db.collection('status_checks')
         .find({})
-        .limit(1000)
+        .limit(20)
         .toArray()
 
       // Remove MongoDB's _id field from response

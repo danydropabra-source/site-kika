@@ -2,14 +2,16 @@
 
 import { useState, useRef } from 'react'
 import { Upload, X, Check, Loader2, ImagePlus, Send } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
+// Labels come from the dictionary at render time; only the stored value is fixed.
 const LIGACAO_OPTIONS = [
-  { value: '', label: 'Selecionar (opcional)' },
-  { value: 'moradora', label: 'Moradora / Morador' },
-  { value: 'antigo', label: 'Antiga residência' },
-  { value: 'familia', label: 'Família com raízes na rua' },
-  { value: 'visitante', label: 'Visitante' },
-  { value: 'outra', label: 'Outra ligação' },
+  { value: '', key: 'memories.linkSelect' },
+  { value: 'moradora', key: 'memories.linkOpt1' },
+  { value: 'antigo', key: 'memories.linkOpt2' },
+  { value: 'familia', key: 'memories.linkOpt3' },
+  { value: 'visitante', key: 'memories.linkOpt4' },
+  { value: 'outra', key: 'memories.linkOpt5' },
 ]
 
 const MAX_CHARS = 1000
@@ -28,6 +30,7 @@ async function defaultSubmit(payload) {
 }
 
 export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
+  const t = useT()
   const [nome, setNome] = useState('')
   const [ligacao, setLigacao] = useState('')
   const [memoria, setMemoria] = useState('')
@@ -49,11 +52,11 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
     setFileError('')
     if (!f) return
     if (!ALLOWED_TYPES.includes(f.type)) {
-      setFileError('Formato inválido. Use JPG, PNG ou WEBP.')
+      setFileError(t('memories.errInvalidFormat'))
       return
     }
     if (f.size > MAX_FILE_MB * 1024 * 1024) {
-      setFileError(`A imagem excede ${MAX_FILE_MB} MB.`)
+      setFileError(t('memories.errTooLarge').replace('{mb}', MAX_FILE_MB))
       return
     }
     setFile(f)
@@ -108,10 +111,10 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         setSuccess(true)
         reset()
       } else {
-        setError('Não foi possível enviar. Tente novamente.')
+        setError(t('common.errSendFailed'))
       }
     } catch (err) {
-      setError('Ocorreu um erro inesperado. Tente novamente.')
+      setError(t('common.errUnexpected'))
     } finally {
       setSubmitting(false)
     }
@@ -123,21 +126,20 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         <div className="w-16 h-16 mx-auto rounded-full bg-heritage-green text-heritage-warm flex items-center justify-center mb-5 shadow-heritage">
           <Check className="w-7 h-7" strokeWidth={2.2} />
         </div>
-        <p className="eyebrow mb-2">Obrigado</p>
+        <p className="eyebrow mb-2">{t('common.thanks')}</p>
         <h3 className="font-serif text-2xl md:text-3xl text-heritage-green leading-tight">
-          A sua memória foi recebida.
+          {t('memories.successTitle')}
         </h3>
         <div className="gold-divider my-5 max-w-[100px] mx-auto" />
         <p className="text-heritage-gray leading-relaxed max-w-md mx-auto">
-          Será revista pela nossa equipa e, se aprovada, publicada brevemente
-          junto das memórias desta rua. Cada testemunho conta.
+          {t('memories.successBody')}
         </p>
         <button
           type="button"
           onClick={() => setSuccess(false)}
           className="btn-ghost-green mt-7 inline-flex"
         >
-          Partilhar outra memória
+          {t('memories.successCta')}
         </button>
       </div>
     )
@@ -149,12 +151,12 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
       className="heritage-card border border-heritage-gold/25 p-6 md:p-8"
     >
       <div className="mb-6">
-        <p className="eyebrow mb-2">Arquivo Comunitário</p>
+        <p className="eyebrow mb-2">{t('memories.archiveEyebrow')}</p>
         <h3 className="font-serif text-2xl md:text-3xl text-heritage-green leading-tight">
-          Partilhe a sua memória
+          {t('memories.shareTitle')}
         </h3>
         <p className="text-sm text-heritage-gray mt-2 leading-relaxed">
-          Uma recordação, um cheiro, uma história ouvida em criança — tudo cabe neste arquivo.
+          {t('memories.shareIntro')}
         </p>
       </div>
 
@@ -162,13 +164,13 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         {/* Nome */}
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Nome <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('memories.nameLabel')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
           <input
             type="text"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="O seu nome ou iniciais"
+            placeholder={t('memories.namePlaceholder')}
             className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] text-heritage-ink placeholder:text-heritage-gray-light focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
           />
         </div>
@@ -176,7 +178,7 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         {/* Ligação */}
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Ligação a esta rua <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('memories.linkLabel')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
           <div className="relative">
             <select
@@ -185,7 +187,7 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
               className="w-full appearance-none bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 pr-10 text-[15px] text-heritage-ink focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
             >
               {LIGACAO_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>{t(o.key)}</option>
               ))}
             </select>
             <svg className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-heritage-gold pointer-events-none" viewBox="0 0 20 20" fill="currentColor"><path d="M5 8l5 5 5-5H5z"/></svg>
@@ -195,7 +197,7 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         {/* Memória */}
         <div>
           <label className="flex items-center justify-between text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            <span>A sua memória <span className="text-destructive">*</span></span>
+            <span>{t('memories.memoryLabel')} <span className="text-destructive">*</span></span>
             <span className={`font-mono tabular-nums normal-case tracking-normal ${charsLeft < 50 ? 'text-destructive' : 'text-heritage-gray-light'}`}>
               {memoria.length}/{MAX_CHARS}
             </span>
@@ -203,7 +205,7 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
           <textarea
             value={memoria}
             onChange={(e) => setMemoria(e.target.value.slice(0, MAX_CHARS))}
-            placeholder="Conte-nos uma recordação ligada a esta rua…"
+            placeholder={t('memories.memoryPlaceholder')}
             rows={6}
             required
             className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] text-heritage-ink placeholder:text-heritage-gray-light focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition resize-y leading-relaxed"
@@ -213,17 +215,17 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         {/* Upload */}
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Adicionar fotografia <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('memories.photoLabel')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
 
           {preview ? (
             <div className="relative rounded-xl overflow-hidden border border-heritage-gold/30 bg-heritage-warm">
-              <img src={preview} alt="Pré-visualização" className="w-full max-h-72 object-cover" />
+              <img src={preview} alt={t('memories.photoPreview')} className="w-full max-h-72 object-cover" />
               <button
                 type="button"
                 onClick={removeFile}
                 className="absolute top-3 right-3 w-9 h-9 rounded-full bg-heritage-green text-white flex items-center justify-center shadow-heritage hover:bg-heritage-green-dark transition"
-                aria-label="Remover imagem"
+                aria-label={t('memories.photoRemove')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -249,10 +251,10 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
               />
               <ImagePlus className="w-7 h-7 text-heritage-gold" strokeWidth={1.4} />
               <p className="text-sm text-heritage-ink/90">
-                <span className="font-bold text-heritage-green">Carregar fotografia</span>
-                <span className="text-heritage-gray"> ou arrastar para aqui</span>
+                <span className="font-bold text-heritage-green">{t('memories.photoCta')}</span>
+                <span className="text-heritage-gray"> {t('memories.photoDrop')}</span>
               </p>
-              <p className="text-[11px] text-heritage-gray-light">JPG, PNG ou WEBP · até {MAX_FILE_MB} MB</p>
+              <p className="text-[11px] text-heritage-gray-light">{t('memories.photoFormats')}</p>
             </label>
           )}
           {fileError && (
@@ -263,17 +265,17 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         {/* Email */}
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Email <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('memories.emailLabel')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="email@exemplo.pt"
+            placeholder={t('common.emailPlaceholder')}
             className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] text-heritage-ink placeholder:text-heritage-gray-light focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
           />
           <p className="text-[11px] text-heritage-gray-light mt-1.5">
-            Apenas para o avisarmos quando a sua memória for publicada. Nunca será mostrado.
+            {t('memories.emailNotice')}
           </p>
         </div>
 
@@ -291,10 +293,9 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
             </span>
           </span>
           <span className="text-[13px] text-heritage-gray leading-relaxed">
-            Autorizo a utilização deste conteúdo no arquivo público "Histórias que Ficam",
-            de forma editorial e sem fins comerciais.{' '}
+            {t('memories.consent')}{' '}
             <a href="#" className="text-heritage-gold underline-offset-2 hover:underline whitespace-nowrap">
-              Saiba mais
+              {t('common.learnMore')}
             </a>
           </span>
         </label>
@@ -313,17 +314,17 @@ export default function MemoryForm({ onSubmit = defaultSubmit, streetSlug }) {
         >
           {submitting ? (
             <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> A enviar…
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('common.sending')}
             </>
           ) : (
             <>
-              Enviar Memória <Send className="w-3.5 h-3.5" />
+              {t('memories.submit')} <Send className="w-3.5 h-3.5" />
             </>
           )}
         </button>
 
         <p className="text-[12px] text-heritage-gray-light leading-relaxed italic border-l-2 border-heritage-gold/40 pl-3">
-          Todas as memórias são revistas antes da publicação para garantir um espaço seguro e respeitoso.
+          {t('memories.reviewNote')}
         </p>
       </div>
     </form>

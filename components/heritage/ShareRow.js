@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { Instagram, Facebook, Link2, Check, MessageCircle } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 export default function ShareRow({ url, title = 'Histórias que Ficam' }) {
+  const t = useT()
   const [copied, setCopied] = useState(false)
 
   const shareUrl = typeof window !== 'undefined' ? (url || window.location.href) : (url || '')
@@ -25,7 +27,7 @@ export default function ShareRow({ url, title = 'Histórias que Ficam' }) {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-      <p className="eyebrow">Partilhar esta história</p>
+      <p className="eyebrow">{t('street.shareThisStory')}</p>
       <div className="flex flex-wrap gap-2">
         {items.map(({ label, icon: Icon, href }) => (
           <a
