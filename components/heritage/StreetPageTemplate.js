@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Map as MapIcon,
   Heart,
@@ -27,6 +28,7 @@ import AudioPlayer from '@/components/heritage/AudioPlayer'
 import ShareRow from '@/components/heritage/ShareRow'
 import MemoryCard from '@/components/heritage/MemoryCard'
 import MemoryForm from '@/components/heritage/MemoryForm'
+import GalleryLightbox from '@/components/heritage/GalleryLightbox'
 import { useT } from '@/lib/i18n/I18nProvider'
 import { useFavorite } from '@/lib/useFavorites'
 
@@ -73,12 +75,19 @@ export default function StreetPageTemplate({ street }) {
   const { isFav, ready: favReady, toggle: toggleFav } = useFavorite(street?.slug || '')
   const [pulse, setPulse] = useState(false)
   const [baIndex, setBaIndex] = useState(0)
+  // Index of the photo open in the full-screen viewer; null = closed.
+  const [lightbox, setLightbox] = useState(null)
+  const [brokenImages, setBrokenImages] = useState(() => new Set())
 
   if (!street) return null
 
   // ----- Derived / conditional data (all optional, all from street) -----
   const hero = {
     image: street.heroImage,
+    // Which part of the photo stays visible once `object-cover` crops it.
+    // '50% 50%' is the middle; a bigger second number shows more of the bottom.
+    // Set per street via `heroFocus` in heritage-data.js.
+    focus: street.heroFocus || '50% 50%',
     category: street.category,
     title: street.title,
     subtitle: street.subtitle,
@@ -93,8 +102,14 @@ export default function StreetPageTemplate({ street }) {
   const beforeAfter = street.before_after_images || []
   const currentBA = beforeAfter[baIndex]
 
-  const gallery = street.gallery || []
+  // Safety net for photos deleted from storage without updating the list in
+  // heritage-data.js: a URL that fails to load is dropped instead of leaving
+  // an empty tile. Card and lightbox share this filtered array, so the index
+  // a visitor clicks always matches the photo that opens.
+  const gallery = (street.gallery || []).filter((g) => !brokenImages.has(g))
+  const markBroken = (src) => setBrokenImages((prev) => new Set(prev).add(src))
   const curiosities = street.curiosities || []
+  const landmarks = street.landmarks || []
 
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
@@ -103,13 +118,23 @@ export default function StreetPageTemplate({ street }) {
       {/* ============================= HERO ============================= */}
       <section className="relative">
         <div className="relative h-[86vh] min-h-[560px] max-h-[820px] overflow-hidden">
-          <img src={hero.image} alt={`Vista histórica da ${hero.title}, ${hero.category}`} className="absolute inset-0 w-full h-full object-cover" />
+          <Image
+            src={hero.image}
+            alt={t('street.heroImageAlt').replace('{street}', hero.title).replace('{place}', hero.category)}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            // Inline style, not a Tailwind class: the value comes from the data
+            // and Tailwind can only generate classes it can see in the source.
+            style={{ objectPosition: hero.focus }}
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-heritage-green-dark/45 via-heritage-green/35 to-heritage-green-dark/85" />
           <div className="absolute inset-0 bg-gradient-to-r from-heritage-green-dark/40 to-transparent" />
 
           {/* Top bar: logo left, actions right */}
           <div className="relative container pt-5 md:pt-7 flex items-start justify-between gap-3">
-            <Link href="/" aria-label="Histórias que Ficam — início" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded">
+            <Link href="/" aria-label={t('common.homeAriaLabel')} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold rounded">
               <span className="hidden sm:inline-flex">
                 <Logo variant="full" size={44} tone="warm" showTagline />
               </span>
@@ -165,12 +190,12 @@ export default function StreetPageTemplate({ street }) {
               <div>
                 <p className="eyebrow">{t('common.audioGuide')}</p>
                 <h2 className="font-serif text-lg md:text-xl text-heritage-green leading-tight">
-                  Ouça a história de {hero.title}
+                  {t('street.audioCardTitle').replace('{street}', hero.title)}
                 </h2>
               </div>
             </div>
             <p className="text-sm text-heritage-gray leading-relaxed mb-4 max-w-xl">
-              Uma narrativa curta e cuidada, para ouvir enquanto caminha ou lê.
+              {t('street.audioCardBody')}
             </p>
             <AudioPlayer title={street.audio.title} src={street.audio.src} duration={street.audio.duration} />
           </div>
@@ -181,17 +206,32 @@ export default function StreetPageTemplate({ street }) {
           Fixed 2-column grid (single template for every street).
           Each block has a canonical column & order; removing a block
           NEVER re-flows the others between columns.
+
+          MOBILE ORDER: below `md` the two column wrappers use `display: contents`,
+          so every block becomes a direct grid item and the `order-N` class on each
+          one decides the reading order. Change a block's `order-N` to move it on
+          mobile — desktop is unaffected (`md:order-none` restores the columns).
+          Current mobile order:
+            1 história principal · 2 porquê este nome · 3 património · 4 vida na rua
+            5 figura em destaque · 6 galeria · 7 memórias · 8 curiosidades
           ============================================================= */}
       <section className="container mt-14 md:mt-20">
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* --------- LEFT COLUMN (canonical order) --------- */}
-          <div className="space-y-6">
+          <div className="contents md:block md:space-y-6">
             {/* 1. A [street] — main history */}
             {mainHistoryText && (
-              <CardShell id="historia" icon={BookOpen} eyebrow={hero.category} title={`A ${hero.title}`}>
+              <CardShell id="historia" icon={BookOpen} eyebrow={hero.category} title={t('street.mainHistoryTitle').replace('{street}', hero.title)} className="order-1 md:order-none">
                 {street.main_history_image && (
                   <div className="rounded-xl overflow-hidden mb-5">
-                    <img src={street.main_history_image} alt={`${hero.title} — fotografia histórica`} className="w-full h-auto object-cover sepia-[0.12]" />
+                    <Image
+                      src={street.main_history_image}
+                      alt={t('street.historyImageAlt').replace('{street}', hero.title)}
+                      width={1200}
+                      height={800}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="w-full h-auto object-cover sepia-[0.12]"
+                    />
                   </div>
                 )}
                 <div className="space-y-4">
@@ -202,10 +242,17 @@ export default function StreetPageTemplate({ street }) {
 
             {/* 3. Themed narrative section(s) */}
             {themedSections.map((s, i) => (
-              <CardShell key={`themed-${i}`} icon={Hammer} eyebrow="Vida na rua" title={s.title}>
+              <CardShell key={`themed-${i}`} icon={Hammer} eyebrow={t('street.themedEyebrow')} title={s.title} className="order-4 md:order-none">
                 {s.image && (
                   <div className="rounded-xl overflow-hidden mb-4">
-                    <img src={s.image} alt={s.title} className="w-full h-auto object-cover sepia-[0.1]" />
+                    <Image
+                      src={s.image}
+                      alt={s.title}
+                      width={1200}
+                      height={800}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="w-full h-auto object-cover sepia-[0.1]"
+                    />
                   </div>
                 )}
                 <p>{s.body}</p>
@@ -214,10 +261,10 @@ export default function StreetPageTemplate({ street }) {
 
             {/* 5. Figura em Destaque */}
             {personality && (
-              <CardShell icon={User} eyebrow="Figura em Destaque" title={personality.name}>
+              <CardShell icon={User} eyebrow={t('street.figureEyebrow')} title={personality.name} className="order-5 md:order-none">
                 <div className="flex items-start gap-4">
-                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-2 ring-heritage-gold/30 ring-offset-2 ring-offset-heritage-warm flex-shrink-0">
-                    <img src={personality.photo} alt={personality.name} className="w-full h-full object-cover sepia-[0.18]" />
+                  <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-2 ring-heritage-gold/30 ring-offset-2 ring-offset-heritage-warm flex-shrink-0">
+                    <Image src={personality.photo} alt={personality.name} fill sizes="112px" className="object-cover sepia-[0.18]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs uppercase tracking-[0.16em] text-heritage-gold font-bold mb-2">{personality.dates}</p>
@@ -234,30 +281,59 @@ export default function StreetPageTemplate({ street }) {
 
             {/* 7. Galeria */}
             {gallery.length > 0 && (
-              <CardShell icon={Sparkles} eyebrow={t('street.tabGallery')} title="Fotografia da rua">
+              <CardShell icon={Sparkles} eyebrow={t('street.tabGallery')} title={t('street.galleryPhotos')} className="order-6 md:order-none">
                 <div className="grid grid-cols-2 gap-2">
-                  {gallery.slice(0, 4).map((g, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden aspect-[4/3]">
-                      <img src={g} alt={`Galeria ${i+1}`} className="w-full h-full object-cover sepia-[0.12] hover:sepia-0 transition-all duration-500" />
-                    </div>
-                  ))}
+                  {gallery.slice(0, 4).map((g, i) => {
+                    // The 4th tile doubles as the "there are more" affordance.
+                    const hidden = gallery.length - 4
+                    const showsMore = i === 3 && hidden > 0
+                    return (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setLightbox(i)}
+                        aria-label={
+                          showsMore
+                            ? t('street.galleryViewAll')
+                            : t('street.galleryImageOf').replace('{i}', String(i + 1)).replace('{n}', String(gallery.length))
+                        }
+                        className="relative rounded-lg overflow-hidden aspect-[4/3] group focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold"
+                      >
+                        <Image src={g} alt={`${t('street.galleryImageAlt')} ${i + 1}`} fill sizes="(max-width: 768px) 45vw, 22vw" onError={() => markBroken(g)} className="object-cover sepia-[0.12] group-hover:sepia-0 transition-all duration-500" />
+                        {showsMore && (
+                          <span className="absolute inset-0 bg-heritage-green-dark/70 flex items-center justify-center text-heritage-warm font-serif text-2xl">
+                            +{hidden}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
+                {gallery.length > 4 && (
+                  <button
+                    type="button"
+                    onClick={() => setLightbox(0)}
+                    className="btn-ghost-green mt-4 inline-flex text-xs"
+                  >
+                    {t('street.galleryViewAll')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  </button>
+                )}
               </CardShell>
             )}
           </div>
 
           {/* --------- RIGHT COLUMN (canonical order) --------- */}
-          <div className="space-y-6">
+          <div className="contents md:block md:space-y-6">
             {/* 2. Porque se chama…? */}
             {street.name_origin && (
-              <CardShell icon={Sparkles} eyebrow="Porquê este nome?" title={`Porque se chama ${hero.title}?`} tone="muted">
+              <CardShell icon={Sparkles} eyebrow={t('street.nameOriginEyebrow')} title={t('street.nameOriginTitle').replace('{street}', hero.title)} tone="muted" className="order-2 md:order-none">
                 <p>{street.name_origin}</p>
               </CardShell>
             )}
 
             {/* 4. Património em Destaque */}
             {heritage && (
-              <CardShell icon={Landmark} eyebrow="Património em Destaque" title={heritage.name}>
+              <CardShell icon={Landmark} eyebrow={t('street.heritageEyebrow')} title={heritage.name} className="order-3 md:order-none">
                 {heritage.subtitle && (
                   <p className="text-xs uppercase tracking-[0.18em] text-heritage-gold font-bold -mt-3 mb-4">
                     {heritage.subtitle}
@@ -265,20 +341,36 @@ export default function StreetPageTemplate({ street }) {
                 )}
                 {heritage.image && (
                   <div className="rounded-xl overflow-hidden mb-4">
-                    <img src={heritage.image} alt={heritage.name} className="w-full h-auto object-cover" />
+                    <Image
+                      src={heritage.image}
+                      alt={heritage.name}
+                      width={1200}
+                      height={800}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="w-full h-auto object-cover"
+                    />
                   </div>
                 )}
                 <p>{heritage.text}</p>
               </CardShell>
             )}
 
-            {/* 6. Memórias da Comunidade — featured */}
+            {/* 6. Memórias da Comunidade — featured (or an invitation while empty) */}
+            {!featuredMemory && (
+              <CardShell icon={MessageCircle} eyebrow={t('memories.eyebrow')} title={t('memories.emptyTitle')} tone="accent" className="order-7 md:order-none">
+                <Quote className="w-7 h-7 text-heritage-gold/40 -mt-1 mb-3" strokeWidth={1.4} aria-hidden="true" />
+                <p className="font-serif italic text-heritage-ink/90 leading-[1.75] text-[16px]">{t('memories.emptyBody')}</p>
+                <a href="#memorias" className="btn-ghost-gold mt-5 inline-flex">
+                  {t('memories.shareCta')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                </a>
+              </CardShell>
+            )}
             {featuredMemory && (
-              <CardShell icon={MessageCircle} eyebrow={t('memories.eyebrow')} title="Memórias da Comunidade" tone="accent">
+              <CardShell icon={MessageCircle} eyebrow={t('memories.eyebrow')} title={t('memories.sharedTitle')} tone="accent" className="order-7 md:order-none">
                 <Quote className="w-7 h-7 text-heritage-gold/40 -mt-1 mb-3" strokeWidth={1.4} aria-hidden="true" />
                 {featuredMemory.photo && (
-                  <div className="rounded-xl overflow-hidden mb-4 aspect-[16/10]">
-                    <img src={featuredMemory.photo} alt={featuredMemory.name} className="w-full h-full object-cover sepia-[0.15]" />
+                  <div className="relative rounded-xl overflow-hidden mb-4 aspect-[16/10]">
+                    <Image src={featuredMemory.photo} alt={featuredMemory.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover sepia-[0.15]" />
                   </div>
                 )}
                 <blockquote className="font-serif italic text-heritage-ink/90 leading-[1.75] text-[16px]">
@@ -290,14 +382,14 @@ export default function StreetPageTemplate({ street }) {
                   {featuredMemory.ligacao && ` · ${featuredMemory.ligacao}`}
                 </p>
                 <a href="#memorias" className="btn-ghost-gold mt-5 inline-flex">
-                  Ver mais memórias <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  {t('memories.viewMore')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </a>
               </CardShell>
             )}
 
             {/* 8. Curiosidades */}
             {curiosities.length > 0 && (
-              <CardShell icon={Sparkles} eyebrow="Curiosidades" title="Sabia que…" tone="muted">
+              <CardShell icon={Sparkles} eyebrow={t('street.tabCuriosities')} title={t('street.curiositiesTitle')} tone="muted" className="order-8 md:order-none">
                 <ul className="space-y-4">
                   {curiosities.map((c, i) => (
                     <li key={i} className="flex gap-3 items-start">
@@ -316,22 +408,22 @@ export default function StreetPageTemplate({ street }) {
       {beforeAfter.length > 0 && (
         <section className="container mt-16 md:mt-24 max-w-5xl">
           <div className="text-center mb-8">
-            <p className="eyebrow mb-2">Memória Visual</p>
-            <h2 className="section-title">Antes e Agora</h2>
+            <p className="eyebrow mb-2">{t('street.visualMemory')}</p>
+            <h2 className="section-title">{t('street.beforeAndNow')}</h2>
             <div className="gold-divider mt-4 max-w-[120px] mx-auto" />
           </div>
           <div className="relative">
             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
               <figure className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-heritage">
-                <img src={currentBA.before} alt="Antes" className="w-full h-full object-cover sepia-[0.35] saturate-[0.75]" />
+                <Image src={currentBA.before} alt={t('street.before')} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover sepia-[0.35] saturate-[0.75]" />
                 <figcaption className="absolute top-3 left-3 bg-heritage-warm/95 backdrop-blur px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.22em] text-heritage-green font-bold">
-                  Antes{currentBA.year_before ? ` · ${currentBA.year_before}` : ''}
+                  {t('street.before')}{currentBA.year_before ? ` · ${currentBA.year_before}` : ''}
                 </figcaption>
               </figure>
               <figure className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-heritage">
-                <img src={currentBA.after} alt="Agora" className="w-full h-full object-cover" />
+                <Image src={currentBA.after} alt={t('street.now')} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 <figcaption className="absolute top-3 left-3 bg-heritage-gold text-white px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.22em] font-bold">
-                  Agora{currentBA.year_after ? ` · ${currentBA.year_after}` : ''}
+                  {t('street.now')}{currentBA.year_after ? ` · ${currentBA.year_after}` : ''}
                 </figcaption>
               </figure>
             </div>
@@ -340,13 +432,13 @@ export default function StreetPageTemplate({ street }) {
             </p>
             {beforeAfter.length > 1 && (
               <div className="flex items-center justify-center gap-3 mt-6">
-                <button onClick={() => setBaIndex((baIndex - 1 + beforeAfter.length) % beforeAfter.length)} aria-label="Anterior" className="w-11 h-11 rounded-full border border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold hover:text-white transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold">
+                <button onClick={() => setBaIndex((baIndex - 1 + beforeAfter.length) % beforeAfter.length)} aria-label={t('street.prev')} className="w-11 h-11 rounded-full border border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold hover:text-white transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold">
                   <ChevronLeft className="w-5 h-5" aria-hidden="true" />
                 </button>
                 <span className="text-xs tabular-nums text-heritage-gray-light tracking-widest">
                   {baIndex + 1} / {beforeAfter.length}
                 </span>
-                <button onClick={() => setBaIndex((baIndex + 1) % beforeAfter.length)} aria-label="Seguinte" className="w-11 h-11 rounded-full border border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold/10 transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold">
+                <button onClick={() => setBaIndex((baIndex + 1) % beforeAfter.length)} aria-label={t('street.next')} className="w-11 h-11 rounded-full border border-heritage-gold/40 text-heritage-green hover:bg-heritage-gold/10 transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold">
                   <ChevronRight className="w-5 h-5" aria-hidden="true" />
                 </button>
               </div>
@@ -355,39 +447,46 @@ export default function StreetPageTemplate({ street }) {
         </section>
       )}
 
-      {/* ============================= FULL MEMORIES SECTION ============================= */}
-      {memories.length > 0 && (
-        <section id="memorias" className="container mt-16 md:mt-24">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <p className="eyebrow mb-2">{t('memories.eyebrow')}</p>
-            <h2 className="section-title">{t('memories.headerTitle')}</h2>
-            <div className="gold-divider mt-4 max-w-[120px] mx-auto" />
-            <p className="text-heritage-gray mt-5 leading-relaxed">{t('memories.headerBody')}</p>
-          </div>
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-start">
-            <MemoryForm streetSlug={street.slug} />
-            <div>
-              <h3 className="font-serif text-2xl text-heritage-green mb-5">{t('memories.sharedTitle')}</h3>
+      {/* ============================= FULL MEMORIES SECTION =============================
+          Always rendered: the form is how a street without memories gets its first one. */}
+      <section id="memorias" className="container mt-16 md:mt-24">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <p className="eyebrow mb-2">{t('memories.eyebrow')}</p>
+          <h2 className="section-title">{t('memories.headerTitle')}</h2>
+          <div className="gold-divider mt-4 max-w-[120px] mx-auto" />
+          <p className="text-heritage-gray mt-5 leading-relaxed">{t('memories.headerBody')}</p>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+          <MemoryForm streetSlug={street.slug} />
+          <div>
+            <h3 className="font-serif text-2xl text-heritage-green mb-5">{t('memories.sharedTitle')}</h3>
+            {memories.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-5">
                 {memories.map((m) => <MemoryCard key={m.id} {...m} />)}
               </div>
-            </div>
+            ) : (
+              <div className="heritage-card border border-dashed border-heritage-gold/40 p-8 text-center">
+                <Quote className="w-7 h-7 text-heritage-gold/40 mx-auto mb-3" strokeWidth={1.4} aria-hidden="true" />
+                <p className="font-serif text-xl text-heritage-green">{t('memories.emptyTitle')}</p>
+                <p className="text-sm text-heritage-gray mt-2 leading-relaxed">{t('memories.emptyBody')}</p>
+              </div>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ============================= ONDE FICA? ============================= */}
       {street.location_description && (
         <section className="mt-20 md:mt-24">
           <div className="relative bg-heritage-green text-heritage-warm overflow-hidden">
             <div className="absolute inset-0 opacity-15 pointer-events-none">
-              <img src={street.heroImage} alt="" className="w-full h-full object-cover" />
+              <Image src={street.heroImage} alt="" fill sizes="100vw" className="object-cover" />
               <div className="absolute inset-0 bg-heritage-green/85" />
             </div>
             <div className="relative container py-14 md:py-20 grid md:grid-cols-[1fr_auto] gap-8 items-center">
               <div className="max-w-2xl">
                 <p className="text-heritage-gold-light uppercase tracking-[0.28em] text-[11px] md:text-xs mb-3 flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5" aria-hidden="true" /> Onde fica?
+                  <MapPin className="w-3.5 h-3.5" aria-hidden="true" /> {t('street.whereIsIt')}
                 </p>
                 <h2 className="font-serif text-3xl md:text-5xl leading-tight">{hero.title}</h2>
                 <div className="h-px w-16 bg-heritage-gold my-4" />
@@ -396,22 +495,23 @@ export default function StreetPageTemplate({ street }) {
                   <MapIcon className="w-3.5 h-3.5" aria-hidden="true" /> Ver no mapa <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </Link>
               </div>
-              {/* Landmark markers strip */}
-              <div className="flex md:flex-col gap-3 md:gap-4 flex-wrap md:pr-2">
-                {[
-                  { icon: Landmark, label: 'Igreja Matriz', dist: 'a sul' },
-                  { icon: MapPin, label: 'Praça Velha', dist: 'a norte' },
-                  { icon: Landmark, label: 'Castelo', dist: 'a poente' },
-                ].map((m) => (
-                  <div key={m.label} className="flex items-center gap-3 border border-heritage-gold/30 rounded-full px-4 py-2 bg-heritage-green-dark/40">
-                    <m.icon className="w-4 h-4 text-heritage-gold-light" aria-hidden="true" />
-                    <div className="leading-tight">
-                      <p className="text-[11px] uppercase tracking-[0.16em] text-heritage-warm/90 font-bold">{m.label}</p>
-                      <p className="text-[10px] text-heritage-warm/60">{m.dist}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {/* Landmark markers strip — per street, from `landmarks` in heritage-data.js */}
+              {landmarks.length > 0 && (
+                <div className="flex md:flex-col gap-3 md:gap-4 flex-wrap md:pr-2">
+                  {landmarks.map((m) => {
+                    const Icon = m.icon === 'pin' ? MapPin : Landmark
+                    return (
+                      <div key={m.label} className="flex items-center gap-3 border border-heritage-gold/30 rounded-full px-4 py-2 bg-heritage-green-dark/40">
+                        <Icon className="w-4 h-4 text-heritage-gold-light" aria-hidden="true" />
+                        <div className="leading-tight">
+                          <p className="text-[11px] uppercase tracking-[0.16em] text-heritage-warm/90 font-bold">{m.label}</p>
+                          <p className="text-[10px] text-heritage-warm/60">{m.dist}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -426,6 +526,13 @@ export default function StreetPageTemplate({ street }) {
 
       <Footer />
       <MobileBottomNav active="mapa" />
+
+      <GalleryLightbox
+        images={gallery}
+        index={lightbox}
+        onClose={() => setLightbox(null)}
+        onImageError={markBroken}
+      />
     </div>
   )
 }

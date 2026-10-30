@@ -7,12 +7,13 @@ import Header from '@/components/heritage/Header'
 import Footer from '@/components/heritage/Footer'
 import MobileBottomNav from '@/components/heritage/MobileBottomNav'
 import PlaceCard from '@/components/heritage/PlaceCard'
-import { getPersonality, getPlaceBySlug } from '@/lib/heritage-data'
+import { useContent } from '@/lib/content'
 import { useT } from '@/lib/i18n/I18nProvider'
 
 export default function PersonalityPage() {
   const params = useParams()
   const t = useT()
+  const { getPersonality, getPlaceBySlug } = useContent()
   const person = getPersonality(params?.slug)
   if (!person) return notFound()
 

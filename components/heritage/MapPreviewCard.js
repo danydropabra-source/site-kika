@@ -1,7 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight, X, MapPin } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 export default function MapPreviewCard({ place, onClose, floating = false }) {
+  const t = useT()
   if (!place) return null
   return (
     <div
@@ -40,7 +44,7 @@ export default function MapPreviewCard({ place, onClose, floating = false }) {
           href={`/historias/${place.slug}`}
           className="btn-gold mt-4 w-full sm:w-auto"
         >
-          Ver História <ArrowRight className="w-3.5 h-3.5" />
+          {t('common.verHistoria')} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
     </div>

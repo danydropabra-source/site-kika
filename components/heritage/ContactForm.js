@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Loader2, Send, Check } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 async function defaultSubmit(payload) {
   await new Promise((r) => setTimeout(r, 1300))
@@ -9,16 +10,18 @@ async function defaultSubmit(payload) {
   return { ok: true }
 }
 
+// Labels come from the dictionary at render time; only the stored value is fixed.
 const SUBJECTS = [
-  { value: '', label: 'Selecionar (opcional)' },
-  { value: 'municipio', label: 'Sou de uma Câmara Municipal' },
-  { value: 'junta', label: 'Sou de uma Junta de Freguesia' },
-  { value: 'parceiro', label: 'Proposta de parceria' },
-  { value: 'imprensa', label: 'Imprensa / comunicação social' },
-  { value: 'outro', label: 'Outro assunto' },
+  { value: '', key: 'contactos.subjSelect' },
+  { value: 'municipio', key: 'contactos.subj1' },
+  { value: 'junta', key: 'contactos.subj2' },
+  { value: 'parceiro', key: 'contactos.subj3' },
+  { value: 'imprensa', key: 'contactos.subj4' },
+  { value: 'outro', key: 'contactos.subj5' },
 ]
 
 export default function ContactForm({ onSubmit = defaultSubmit, compact = false }) {
+  const t = useT()
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [organizacao, setOrganizacao] = useState('')
@@ -46,10 +49,10 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
         setSuccess(true)
         reset()
       } else {
-        setError('Não foi possível enviar. Tente novamente.')
+        setError(t('common.errSendFailed'))
       }
     } catch (err) {
-      setError('Ocorreu um erro inesperado.')
+      setError(t('common.errUnexpected'))
     } finally {
       setSubmitting(false)
     }
@@ -61,17 +64,16 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
         <div className="w-16 h-16 mx-auto rounded-full bg-heritage-green text-heritage-warm flex items-center justify-center mb-5 shadow-heritage">
           <Check className="w-7 h-7" strokeWidth={2.2} />
         </div>
-        <p className="eyebrow mb-2">Obrigado</p>
+        <p className="eyebrow mb-2">{t('common.thanks')}</p>
         <h3 className="font-serif text-2xl md:text-3xl text-heritage-green leading-tight">
-          A sua mensagem foi recebida.
+          {t('contactos.successTitle')}
         </h3>
         <div className="gold-divider my-5 max-w-[100px] mx-auto" />
         <p className="text-heritage-gray leading-relaxed max-w-md mx-auto">
-          A nossa equipa responderá nos próximos dias úteis.
-          Obrigado pelo seu interesse em "Histórias que Ficam".
+          {t('contactos.successBody')}
         </p>
         <button type="button" onClick={() => setSuccess(false)} className="btn-ghost-green mt-7 inline-flex">
-          Enviar outra mensagem
+          {t('contactos.successCta')}
         </button>
       </div>
     )
@@ -80,12 +82,12 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
   return (
     <form onSubmit={handleSubmit} className={`heritage-card border border-heritage-gold/25 ${compact ? 'p-6' : 'p-6 md:p-8'}`}>
       <div className="mb-6">
-        <p className="eyebrow mb-2">Fale Connosco</p>
+        <p className="eyebrow mb-2">{t('contactos.formEyebrow')}</p>
         <h3 className="font-serif text-2xl md:text-3xl text-heritage-green leading-tight">
-          Vamos conversar.
+          {t('contactos.formTitle')}
         </h3>
         <p className="text-sm text-heritage-gray mt-2 leading-relaxed">
-          Preçament-nos a sua proposta. Respondemos em 48 horas úteis.
+          {t('contactos.formBody')}
         </p>
       </div>
 
@@ -93,27 +95,27 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-              Nome <span className="text-destructive">*</span>
+              {t('contactos.fName')} <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
               required
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="O seu nome"
+              placeholder={t('contactos.fNamePlaceholder')}
               className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
             />
           </div>
           <div>
             <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-              Email <span className="text-destructive">*</span>
+              {t('contactos.fEmail')} <span className="text-destructive">*</span>
             </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@exemplo.pt"
+              placeholder={t('common.emailPlaceholder')}
               className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
             />
           </div>
@@ -121,20 +123,20 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
 
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Organização <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('contactos.fOrg')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
           <input
             type="text"
             value={organizacao}
             onChange={(e) => setOrganizacao(e.target.value)}
-            placeholder="Câmara Municipal do Fundão, p. ex."
+            placeholder={t('contactos.fOrgPlaceholder')}
             className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
           />
         </div>
 
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Assunto <span className="text-heritage-gray-light font-normal normal-case tracking-normal">(opcional)</span>
+            {t('contactos.fSubject')} <span className="text-heritage-gray-light font-normal normal-case tracking-normal">({t('common.optional')})</span>
           </label>
           <div className="relative">
             <select
@@ -143,7 +145,7 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
               className="w-full appearance-none bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 pr-10 text-[15px] focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition"
             >
               {SUBJECTS.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
+                <option key={s.value} value={s.value}>{t(s.key)}</option>
               ))}
             </select>
             <svg className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-heritage-gold pointer-events-none" viewBox="0 0 20 20" fill="currentColor"><path d="M5 8l5 5 5-5H5z"/></svg>
@@ -152,13 +154,13 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
 
         <div>
           <label className="block text-xs uppercase tracking-[0.16em] text-heritage-green font-bold mb-2">
-            Mensagem <span className="text-destructive">*</span>
+            {t('contactos.fMessage')} <span className="text-destructive">*</span>
           </label>
           <textarea
             required
             value={mensagem}
             onChange={(e) => setMensagem(e.target.value)}
-            placeholder="Conte-nos sobre o seu projecto ou interesse…"
+            placeholder={t('contactos.fMessagePlaceholder')}
             rows={5}
             className="w-full bg-heritage-beige/40 border border-heritage-gold/25 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:border-heritage-green focus:bg-heritage-warm transition resize-y leading-relaxed"
           />
@@ -172,8 +174,8 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
             </span>
           </span>
           <span className="text-[13px] text-heritage-gray leading-relaxed">
-            Autorizo o tratamento dos meus dados para resposta a este contacto.{' '}
-            <a href="#" className="text-heritage-gold underline-offset-2 hover:underline whitespace-nowrap">Política de privacidade</a>
+            {t('contactos.fConsent')}{' '}
+            <a href="#" className="text-heritage-gold underline-offset-2 hover:underline whitespace-nowrap">{t('contactos.fPolicy')}</a>
           </span>
         </label>
 
@@ -185,9 +187,9 @@ export default function ContactForm({ onSubmit = defaultSubmit, compact = false 
 
         <button type="submit" disabled={!canSubmit} className="btn-green w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
           {submitting ? (
-            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> A enviar…</>
+            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('common.sending')}</>
           ) : (
-            <>Enviar Mensagem <Send className="w-3.5 h-3.5" /></>
+            <>{t('contactos.fSubmit')} <Send className="w-3.5 h-3.5" /></>
           )}
         </button>
       </div>

@@ -1,6 +1,7 @@
 import './globals.css'
 import { Playfair_Display, Lato } from 'next/font/google'
 import { I18nProvider } from '@/lib/i18n/I18nProvider'
+import SkipLink from '@/components/heritage/SkipLink'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -49,13 +50,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt" className={`${playfair.variable} ${lato.variable}`}>
       <body className="min-h-screen paper-texture">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-heritage-green focus:text-heritage-warm focus:px-4 focus:py-2 focus:rounded-full focus:text-sm focus:shadow-heritage-lg"
-        >
-          Saltar para o conteúdo
-        </a>
         <I18nProvider initialLocale="pt">
+          <SkipLink />
           <div id="main">{children}</div>
         </I18nProvider>
       </body>

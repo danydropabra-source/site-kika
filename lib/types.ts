@@ -14,6 +14,8 @@ export interface Place {
   lat: number
   lng: number
   pilot?: boolean
+  /** Id of the big place it belongs to (see `placeGroups` in heritage-data.js). */
+  group?: string
   image: string
   description: string
 }

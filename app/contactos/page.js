@@ -8,25 +8,13 @@ import MobileBottomNav from '@/components/heritage/MobileBottomNav'
 import ContactForm from '@/components/heritage/ContactForm'
 import { useT } from '@/lib/i18n/I18nProvider'
 
-const BENEFITS = [
-  { icon: ShieldCheck, title: 'Conteúdos rigorosos', text: 'Investigação documentada, fontes verificadas, revisão científica.' },
-  { icon: Map, title: 'Mapa interactivo', text: 'Plataforma digital própria do município, com pins, rotas e pesquisa.' },
-  { icon: Headphones, title: 'Audio-guias multilíngue', text: 'Narrações profissionais em PT, EN e ES.' },
-  { icon: BookOpen, title: 'Identidade gráfica', text: 'Imagem coerente, elegância institucional, sem ruído visual.' },
-  { icon: Users, title: 'Memórias da comunidade', text: 'Módulo aberto para recolher testemunhos dos habitantes.' },
-  { icon: QrCode, title: 'Placas com QR', text: 'Placas discretas no terreno que ligam directamente ao conteúdo.' },
-]
-
-const STEPS = [
-  { n: '01', title: 'Reunião inicial', text: 'Conhecemos o território, os objectivos e o orçamento. Sem compromisso.' },
-  { n: '02', title: 'Plano de pontos', text: 'Definimos juntos os locais, personalidades e ordem de instalação.' },
-  { n: '03', title: 'Investigação', text: 'A nossa equipa trabalha com o arquivo municipal e fontes locais.' },
-  { n: '04', title: 'Produção', text: 'Textos, traduoções, audio, fotografia e plataforma digital.' },
-  { n: '05', title: 'Instalação', text: 'Colocação das placas no terreno e lançamento público.' },
-  { n: '06', title: 'Acompanhamento', text: 'Moderação de memórias e actualização de conteúdos.' },
-]
+// Only the icons live at module scope; the copy is read from the dictionary
+// inside the component, so it follows the selected language.
+const BENEFIT_ICONS = [ShieldCheck, Map, Headphones, BookOpen, Users, QrCode]
+const STEP_COUNT = 6
 
 function PlaqueMockup() {
+  const t = useT()
   return (
     <div className="relative max-w-sm mx-auto">
       {/* Plaque */}
@@ -45,12 +33,12 @@ function PlaqueMockup() {
 
         <div className="relative h-full flex flex-col items-center text-center text-heritage-warm pt-6">
           <p className="text-[9px] uppercase tracking-[0.32em] text-heritage-gold-light">
-            Património · Cultura · Experiência
+            {t('home.heroEyebrow')}
           </p>
           <h3 className="font-serif text-2xl mt-3 leading-tight">Histórias que Ficam</h3>
           <div className="h-px w-12 bg-heritage-gold my-4" />
           <p className="font-serif italic text-sm leading-snug px-2 text-heritage-warm/85 max-w-[18ch]">
-            “Aqui nasceu José Alves Monteiro — figura ilustre do Fundão.”
+            {t('contactos.plateQuote')}
           </p>
 
           {/* QR */}
@@ -88,6 +76,19 @@ function PlaqueMockup() {
 
 export default function ContactosPage() {
   const t = useT()
+
+  const BENEFITS = BENEFIT_ICONS.map((icon, i) => ({
+    icon,
+    title: t(`contactos.benefit${i + 1}Title`),
+    text: t(`contactos.benefit${i + 1}Text`),
+  }))
+
+  const STEPS = Array.from({ length: STEP_COUNT }, (_, i) => ({
+    n: String(i + 1).padStart(2, '0'),
+    title: t(`contactos.step${i + 1}Title`),
+    text: t(`contactos.step${i + 1}Text`),
+  }))
+
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
       <Header />
@@ -194,7 +195,7 @@ export default function ContactosPage() {
                 </li>
                 <li className="flex items-start gap-3 text-heritage-ink/90">
                   <MapPin className="w-4 h-4 mt-0.5 text-heritage-gold flex-shrink-0" aria-hidden="true" />
-                  <span>Fundão, Portugal<br/><span className="text-heritage-gray-light text-xs">Visitas com marcação prévia</span></span>
+                  <span>Fundão, Portugal<br/><span className="text-heritage-gray-light text-xs">{t('contactos.visitsByAppointment')}</span></span>
                 </li>
               </ul>
             </div>

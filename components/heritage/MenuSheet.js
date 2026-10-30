@@ -7,7 +7,7 @@ import { X, Globe, ChevronRight } from 'lucide-react'
 import { useI18n, useT } from '@/lib/i18n/I18nProvider'
 import { getNavItems } from '@/lib/nav'
 
-const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES' }
+const LANG_LABELS = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR' }
 
 export default function MenuSheet({ open, onClose }) {
   const t = useT()
@@ -140,7 +140,7 @@ export default function MenuSheet({ open, onClose }) {
               Histórias que Ficam
             </h2>
             <p className="text-[10px] tracking-[0.22em] uppercase text-heritage-gold mt-1">
-              Património · Cultura · Experiência
+              {t('home.heroEyebrow')}
             </p>
           </div>
           <button

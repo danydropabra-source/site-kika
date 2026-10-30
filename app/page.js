@@ -1,16 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import { Play, ArrowRight, BookOpen, Headphones, Users, Languages, Calendar } from 'lucide-react'
+import { Play, ArrowRight, BookOpen, Headphones, Users, Languages } from 'lucide-react'
 import Header from '@/components/heritage/Header'
 import Footer from '@/components/heritage/Footer'
 import MobileBottomNav from '@/components/heritage/MobileBottomNav'
-import PlaceCard from '@/components/heritage/PlaceCard'
-import { todayInHistory, featuredPlaces } from '@/lib/heritage-data'
+import PlaceGroups from '@/components/heritage/PlaceGroups'
+import HeroVideo from '@/components/heritage/HeroVideo'
+import { homeHero } from '@/lib/heritage-data'
+import { useContent } from '@/lib/content'
 import { useT } from '@/lib/i18n/I18nProvider'
 
 export default function HomePage() {
   const t = useT()
+  const { placeGroups, featuredPlaces } = useContent()
 
   const BENEFITS = [
     { icon: BookOpen, title: t('home.benefit1Title'), text: t('home.benefit1Body') },
@@ -26,10 +29,11 @@ export default function HomePage() {
       {/* HERO */}
       <section className="relative" aria-labelledby="hero-heading">
         <div className="relative h-[78vh] min-h-[520px] max-h-[760px] overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1605641532626-5ab1dab56350?crop=entropy&cs=srgb&fm=jpg&q=85&w=2000"
-            alt="Rua histórica portuguesa ao entardecer, com telhados de terracota a perder-se na neblina dourada."
-            className="absolute inset-0 w-full h-full object-cover"
+          <HeroVideo
+            src={homeHero.video}
+            poster={homeHero.poster}
+            posterFocus={homeHero.posterFocus}
+            alt={t('home.heroImageAlt')}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-heritage-green/40 via-heritage-green/20 to-heritage-green/80" />
           <div className="absolute inset-0 bg-gradient-to-r from-heritage-green-dark/40 to-transparent" />
@@ -54,24 +58,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* HOJE NA HISTÓRIA */}
-      <section id="hoje" className="py-16 md:py-20">
-        <div className="container max-w-4xl">
-          <div className="heritage-card border border-heritage-gold/25 p-6 md:p-10">
-            <div className="flex items-center gap-3 mb-4">
-              <Calendar className="w-4 h-4 text-heritage-gold" aria-hidden="true" />
-              <span className="eyebrow">{t('home.todayEyebrow')}</span>
-            </div>
-            <p className="font-serif text-heritage-gold text-base">{todayInHistory.date}</p>
-            <h2 className="font-serif text-3xl md:text-4xl text-heritage-green mt-2 leading-tight">{todayInHistory.title}</h2>
-            <div className="gold-divider my-5 max-w-[120px]" />
-            <p className="text-heritage-gray leading-relaxed max-w-2xl">{todayInHistory.excerpt}</p>
-            <a href="#" className="btn-ghost-gold mt-6 inline-flex">
-              {t('home.todayCta')} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* "Hoje na História" removido: exige conteúdo novo todos os dias.
+          Os dados (todayInHistory) e as traduções continuam no sítio, por isso
+          repor a secção é só voltar a colocá-la aqui e no menu (lib/nav.js). */}
 
       {/* LOCAIS EM DESTAQUE */}
       <section id="locais" className="py-12 md:py-20">
@@ -86,11 +75,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredPlaces.map((p) => (
-              <PlaceCard key={p.id} {...p} />
-            ))}
-          </div>
+          <PlaceGroups groups={placeGroups} places={featuredPlaces} />
         </div>
       </section>
 

@@ -28,6 +28,20 @@ function FlyTo({ target }) {
   return null
 }
 
+// Re-frames the map whenever the set of places changes (e.g. switching
+// between Fundão and Covilhã), so every pin of the new set is in view.
+function FitToPlaces({ places }) {
+  const map = useMap()
+  const key = places.map((p) => p.slug).join('|')
+  useEffect(() => {
+    if (!places.length) return
+    const bounds = L.latLngBounds(places.map((p) => [p.lat, p.lng]))
+    map.fitBounds(bounds, { padding: [48, 48], maxZoom: 16 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, map])
+  return null
+}
+
 export default function HeritageMap({ places = [], selected, onSelect, center, zoom = 16 }) {
   const mapCenter = useMemo(() => {
     if (center) return center
@@ -36,7 +50,9 @@ export default function HeritageMap({ places = [], selected, onSelect, center, z
       const lng = places.reduce((s, p) => s + p.lng, 0) / places.length
       return [lat, lng]
     }
-    return [40.13965, -7.50105]
+    // Fallback when there are no places to average: centre of the Fundão
+    // historic-centre points. Keep in sync with lib/heritage-data.js.
+    return [40.136618, -7.498676]
   }, [center, places])
 
   const containerRef = useRef(null)
@@ -64,6 +80,7 @@ export default function HeritageMap({ places = [], selected, onSelect, center, z
             }}
           />
         ))}
+        <FitToPlaces places={places} />
         <FlyTo target={selected} />
       </MapContainer>
     </div>

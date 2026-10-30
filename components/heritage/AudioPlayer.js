@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { Play, Pause, Volume2 } from 'lucide-react'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 function formatTime(s) {
   if (!s && s !== 0) return '0:00'
@@ -10,7 +11,8 @@ function formatTime(s) {
   return `${m}:${sec}`
 }
 
-export default function AudioPlayer({ title = 'Ouvir a história', src, duration: fallbackDuration }) {
+export default function AudioPlayer({ title, src, duration: fallbackDuration }) {
+  const t = useT()
   const audioRef = useRef(null)
   const [playing, setPlaying] = useState(false)
   const [time, setTime] = useState(0)
@@ -55,7 +57,7 @@ export default function AudioPlayer({ title = 'Ouvir a história', src, duration
       <div className="flex items-center gap-4">
         <button
           onClick={toggle}
-          aria-label={playing ? 'Pausar' : 'Reproduzir'}
+          aria-label={playing ? t('common.pause') : t('common.play')}
           className="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full bg-heritage-green text-heritage-warm flex items-center justify-center hover:bg-heritage-green-dark transition active:scale-95 shadow-heritage"
         >
           {playing ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" fill="currentColor" />}
@@ -64,8 +66,8 @@ export default function AudioPlayer({ title = 'Ouvir a história', src, duration
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
             <div className="min-w-0">
-              <p className="eyebrow mb-0.5">Audio-guia</p>
-              <p className="font-serif text-heritage-green text-base md:text-lg truncate">{title}</p>
+              <p className="eyebrow mb-0.5">{t('common.audioGuide')}</p>
+              <p className="font-serif text-heritage-green text-base md:text-lg truncate">{title || t('street.audioTitle')}</p>
             </div>
             <Volume2 className="w-4 h-4 text-heritage-gray-light flex-shrink-0 ml-2" />
           </div>

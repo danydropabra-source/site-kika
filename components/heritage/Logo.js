@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useT } from '@/lib/i18n/I18nProvider'
 
 /**
  * SINGLE brand-logo source for the whole app.
@@ -21,6 +22,7 @@ export default function Logo({
   tone = 'green',      // 'green' (default) or 'warm' (for dark backgrounds like the footer)
   className = '',
 }) {
+  const t = useT()
   const markHeight = markSize ?? size
   // Emblem aspect ratio is ~2:3 (pin taller than wide).
   const markWidth = Math.round(markHeight * 0.72)
@@ -54,7 +56,7 @@ export default function Logo({
       </span>
       {showTagline && (
         <span className="text-[10px] tracking-[0.22em] uppercase text-heritage-gold mt-1">
-          Património · Cultura · Experiência
+          {t('home.heroEyebrow')}
         </span>
       )}
     </span>

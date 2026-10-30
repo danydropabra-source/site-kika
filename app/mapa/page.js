@@ -8,25 +8,39 @@ import Footer from '@/components/heritage/Footer'
 import MobileBottomNav from '@/components/heritage/MobileBottomNav'
 import MapPin from '@/components/heritage/MapPin'
 import MapPreviewCard from '@/components/heritage/MapPreviewCard'
-import { featuredPlaces } from '@/lib/heritage-data'
+import { useContent } from '@/lib/content'
 import { useT } from '@/lib/i18n/I18nProvider'
 
-const HeritageMap = dynamic(() => import('@/components/heritage/HeritageMap'), {
-  ssr: false,
-  loading: () => (
+function MapLoading() {
+  const t = useT()
+  return (
     <div className="w-full h-full flex items-center justify-center bg-heritage-beige-dark/40">
       <div className="flex flex-col items-center gap-3 text-heritage-green">
         <Compass className="w-8 h-8 animate-spin" strokeWidth={1.5} aria-hidden="true" />
-        <p className="text-xs uppercase tracking-[0.22em] text-heritage-gold">A carregar mapa…</p>
+        <p className="text-xs uppercase tracking-[0.22em] text-heritage-gold">{t('map.loading')}</p>
       </div>
     </div>
-  ),
+  )
+}
+
+const HeritageMap = dynamic(() => import('@/components/heritage/HeritageMap'), {
+  ssr: false,
+  loading: MapLoading,
 })
 
 export default function MapPage() {
   const t = useT()
   const [selected, setSelected] = useState(null)
+  const { placeGroups, featuredPlaces } = useContent()
+  const [groupId, setGroupId] = useState(placeGroups[0]?.id)
+  const group = placeGroups.find((g) => g.id === groupId)
+  const places = featuredPlaces.filter((p) => p.group === groupId)
   const pilot = featuredPlaces.find((p) => p.pilot)
+
+  const chooseGroup = (id) => {
+    setGroupId(id)
+    setSelected(null)
+  }
 
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
@@ -39,12 +53,28 @@ export default function MapPage() {
         </h1>
         <p className="mt-3 text-heritage-gray text-lg max-w-2xl font-serif italic">{t('map.subtitle')}</p>
         <div className="gold-divider mt-6 max-w-[140px]" />
+        <div className="flex gap-2 mt-6" role="group" aria-label={t('map.placesOnMap')}>
+          {placeGroups.map((g) => {
+            const active = g.id === groupId
+            return (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => chooseGroup(g.id)}
+                aria-pressed={active}
+                className={`px-5 py-2.5 min-h-[44px] rounded-full text-xs font-bold tracking-[0.18em] uppercase border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-heritage-gold ${active ? 'bg-heritage-green text-white border-heritage-green shadow-heritage' : 'text-heritage-green border-heritage-gold/40 hover:bg-heritage-gold/10'}`}
+              >
+                {g.name}
+              </button>
+            )
+          })}
+        </div>
       </section>
 
       <section className="container pb-12">
         <div className="grid lg:grid-cols-[1fr_360px] gap-6">
           <div className="relative h-[60vh] min-h-[420px] lg:h-[640px] rounded-2xl overflow-hidden border border-heritage-gold/25 shadow-heritage">
-            <HeritageMap places={featuredPlaces} selected={selected} onSelect={setSelected} />
+            <HeritageMap places={places} selected={selected} onSelect={setSelected} />
 
             <div className="absolute top-3 right-3 z-[500] bg-heritage-warm/95 backdrop-blur border border-heritage-gold/25 rounded-xl px-4 py-3 shadow-heritage hidden sm:block" aria-label={t('map.legend')}>
               <p className="text-[10px] uppercase tracking-[0.22em] text-heritage-gold font-bold mb-2">{t('map.legend')}</p>
@@ -80,10 +110,10 @@ export default function MapPage() {
             <div className="heritage-card border border-heritage-gold/20">
               <div className="px-5 py-4 border-b border-heritage-gold/15">
                 <p className="eyebrow">{t('map.placesOnMap')}</p>
-                <p className="text-xs text-heritage-gray mt-1">{featuredPlaces.length} {t('map.pointsCount')} · Fundão</p>
+                <p className="text-xs text-heritage-gray mt-1">{places.length} {t('map.pointsCount')} · {group?.name}</p>
               </div>
               <ul className="divide-y divide-heritage-gold/10 max-h-[420px] overflow-y-auto">
-                {featuredPlaces.map((p) => {
+                {places.map((p) => {
                   const active = selected?.slug === p.slug
                   return (
                     <li key={p.slug}>

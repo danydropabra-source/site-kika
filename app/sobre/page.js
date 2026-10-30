@@ -17,13 +17,11 @@ export default function SobrePage() {
     { icon: Sparkles, title: t('sobre.value4Title'), text: t('sobre.value4Body') },
   ]
 
-  const STEPS = [
-    { n: '01', title: 'Identificação', text: 'Selecionamos com a autarquia ruas, edifícios e personalidades a documentar.' },
-    { n: '02', title: 'Investigação', text: 'Recolha em arquivos, jornais, memórias orais. Cruzamento de fontes.' },
-    { n: '03', title: 'Produção editorial', text: 'Textos, audio-guias, fotografia e traduções. Tudo curado.' },
-    { n: '04', title: 'Colocação no terreno', text: 'Placas discretas com QR code, ligadas à página digital de cada lugar.' },
-    { n: '05', title: 'Comunidade', text: 'Acolhemos memórias dos moradores. O arquivo cresce com o tempo.' },
-  ]
+  const STEPS = [1, 2, 3, 4, 5].map((i) => ({
+    n: String(i).padStart(2, '0'),
+    title: t(`sobre.step${i}Title`),
+    text: t(`sobre.step${i}Text`),
+  }))
 
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
